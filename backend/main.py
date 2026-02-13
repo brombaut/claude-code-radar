@@ -1,6 +1,10 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
+from typing import Optional
 from database import init_db
+from events import save_event
+import asyncio
 
 app = FastAPI(title="Claude Code Observability API")
 
@@ -11,6 +15,19 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# SSE clients list (will be used for broadcasting)
+sse_clients = []
+
+class Event(BaseModel):
+    timestamp: int
+    session_id: str
+    hook_event_type: str
+    source_app: Optional[str] = None
+    model_name: Optional[str] = None
+    tool_name: Optional[str] = None
+    payload: Optional[dict] = None
+    summary: Optional[str] = None
 
 @app.on_event("startup")
 def startup():
@@ -23,3 +40,31 @@ def root():
 @app.get("/health")
 def health():
     return {"status": "healthy"}
+
+@app.post("/events")
+async def receive_event(event: Event):
+    """Receive event from Claude Code hooks."""
+    try:
+        # Save to database
+        event_id = save_event(
+            timestamp=event.timestamp,
+            session_id=event.session_id,
+            hook_event_type=event.hook_event_type,
+            source_app=event.source_app,
+            model_name=event.model_name,
+            tool_name=event.tool_name,
+            payload=event.payload,
+            summary=event.summary
+        )
+
+        # Broadcast to SSE clients
+        event_data = event.model_dump()
+        event_data['id'] = event_id
+
+        for queue in sse_clients:
+            await queue.put(event_data)
+
+        return {"status": "ok", "event_id": event_id}
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
