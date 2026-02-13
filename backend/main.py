@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import Optional
 from database import init_db
-from events import save_event
+from events import save_event, get_events, get_active_sessions, get_tool_stats
 import asyncio
 
 app = FastAPI(title="Claude Code Observability API")
@@ -68,3 +68,25 @@ async def receive_event(event: Event):
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/api/events")
+def list_events(
+    limit: int = 100,
+    session_id: Optional[str] = None,
+    event_type: Optional[str] = None
+):
+    """Get events with optional filters."""
+    events = get_events(limit=limit, session_id=session_id, event_type=event_type)
+    return {"events": events, "count": len(events)}
+
+@app.get("/api/sessions/active")
+def active_sessions(minutes: int = 60):
+    """Get active sessions from last N minutes."""
+    sessions = get_active_sessions(minutes=minutes)
+    return {"sessions": sessions, "count": len(sessions)}
+
+@app.get("/api/tools/stats")
+def tool_statistics(hours: int = 1):
+    """Get tool usage statistics."""
+    stats = get_tool_stats(hours=hours)
+    return stats
