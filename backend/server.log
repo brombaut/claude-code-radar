@@ -1,0 +1,51 @@
+INFO:     Will watch for changes in these directories: ['/home/ben/work_personal/claude_code_observability/backend']
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     Started reloader process [98509] using WatchFiles
+INFO:     Started server process [98537]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     127.0.0.1:44468 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:33500 - "POST /events HTTP/1.1" 200 OK
+INFO:     127.0.0.1:36454 - "POST /events HTTP/1.1" 200 OK
+WARNING:  WatchFiles detected changes in 'main.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [98537]
+INFO:     Started server process [1958]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+WARNING:  WatchFiles detected changes in 'main.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [1958]
+INFO:     Started server process [2088]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     127.0.0.1:40438 - "GET /api/events HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40454 - "GET /api/events?limit=2&event_type=PreToolUse HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54124 - "GET /api/sessions/active HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41602 - "GET /api/tools/stats HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41606 - "GET /openapi.json HTTP/1.1" 200 OK
+INFO:     127.0.0.1:33438 - "GET /docs HTTP/1.1" 200 OK
+WARNING:  WatchFiles detected changes in 'main.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [2088]
+INFO:     Started server process [13796]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+WARNING:  WatchFiles detected changes in 'main.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [13796]
+INFO:     Started server process [13959]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     127.0.0.1:36996 - "GET /stream HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54834 - "POST /events HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59318 - "GET /stream HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59332 - "POST /events HTTP/1.1" 200 OK

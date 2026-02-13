@@ -1,0 +1,319 @@
+[
+  {
+    "session_id": "30ce6fc8-632a-45fd-8429-cec8b657956a",
+    "transcript_path": "/home/ben/.claude/projects/-home-ben-work-personal-claude-code-observability/30ce6fc8-632a-45fd-8429-cec8b657956a.jsonl",
+    "cwd": "/home/ben/work_personal/claude_code_observability",
+    "permission_mode": "default",
+    "hook_event_name": "PermissionRequest",
+    "tool_name": "Write",
+    "tool_input": {
+      "file_path": "/home/ben/work_personal/claude_code_observability/README.md",
+      "content": "# Claude Code Observability\n\nA comprehensive observability and monitoring framework for [Claude Code](https://claude.com/claude-code) that captures session lifecycle events, tool usage, and agent interactions through hooks and structured logging.\n\n## Overview\n\nThis project provides deep visibility into Claude Code sessions by instrumenting all major lifecycle events:\n\n- **Session Management**: Track session starts, ends, and context compaction\n- **Tool Usage**: Monitor pre/post tool execution and failures\n- **Agent Lifecycle**: Observe subagent creation and termination\n- **User Interactions**: Log prompts, notifications, and permission requests\n\nAll events are logged as structured JSON for analysis and debugging.\n\n## Features\n\n### Event Hooks\n\nThe system captures the following Claude Code events:\n\n| Hook | Description |\n|------|-------------|\n| `SessionStart` | Fired when a session begins (startup/resume/clear) |\n| `SessionEnd` | Fired when a session terminates |\n| `UserPromptSubmit` | Captures user prompts and agent naming |\n| `PreToolUse` | Logs tool calls before execution |\n| `PostToolUse` | Logs successful tool completions |\n| `PostToolUseFailure` | Captures tool execution failures |\n| `PermissionRequest` | Tracks permission prompts |\n| `Notification` | Logs system notifications |\n| `SubagentStart` | Monitors subagent creation |\n| `SubagentStop` | Monitors subagent termination |\n| `PreCompact` | Logs context window compaction events |\n| `Stop` | Captures session interruptions |\n\n### Utilities\n\n- **TTS Integration**: Text-to-speech announcements (pyttsx3, OpenAI TTS, ElevenLabs)\n- **LLM Utilities**: Claude and OpenAI API helpers for event summarization\n- **HITL Support**: Human-in-the-loop validation utilities\n- **Event Streaming**: Send events to external observability systems\n- **Custom Status Line**: Real-time session status display\n\n### Logging\n\nEvents are logged to `logs/` directory:\n- `session_start.json`: Session initialization data\n- `user_prompt_submit.json`: User interaction history\n- `{session_id}/pre_tool_use.json`: Tool execution traces\n- `{session_id}/post_tool_use.json`: Tool completion records\n\n## Setup\n\n1. **Clone this repository** into your Claude Code project:\n   ```bash\n   git clone <repo-url> claude_code_observability\n   cd claude_code_observability\n   ```\n\n2. **Install dependencies** (using `uv`):\n   ```bash\n   uv sync\n   ```\n\n3. **Copy configuration** to your Claude Code project:\n   ```bash\n   # Option 1: Symlink the .claude directory\n   ln -s $(pwd)/.claude ~/.claude/projects/your-project\n\n   # Option 2: Copy settings.json hooks to your project\n   cp .claude/settings.json ~/.claude/projects/your-project/settings.json\n   ```\n\n4. **Configure environment** (optional):\n   ```bash\n   cp .env.example .env\n   # Add API keys for TTS or external event systems\n   ```\n\n## Usage\n\nOnce configured, hooks activate automatically during Claude Code sessions. No manual intervention required.\n\n### Viewing Logs\n\n```bash\n# View session starts\ncat logs/session_start.json | jq\n\n# View user prompts\ncat logs/user_prompt_submit.json | jq\n\n# View tool usage for specific session\ncat logs/<session-id>/pre_tool_use.json | jq\n```\n\n### Event Streaming\n\nThe `send_event.py` hook can stream events to external systems. Configure with:\n\n```bash\n# In settings.json, hooks call:\nuv run .claude/hooks/send_event.py --source-app claude-code-observability --event-type <EventType> --summarize\n```\n\n### Custom Status Line\n\nThe custom status line displays real-time session information. Activate by including in `settings.json`:\n\n```json\n{\n  \"statusLine\": {\n    \"type\": \"command\",\n    \"command\": \"uv run $CLAUDE_PROJECT_DIR/.claude/status_lines/status_line_v6.py\",\n    \"padding\": 0\n  }\n}\n```\n\n## Project Structure\n\n```\n.\n\u251c\u2500\u2500 .claude/\n\u2502   \u251c\u2500\u2500 hooks/               # Event hook implementations\n\u2502   \u2502   \u251c\u2500\u2500 session_start.py\n\u2502   \u2502   \u251c\u2500\u2500 session_end.py\n\u2502   \u2502   \u251c\u2500\u2500 pre_tool_use.py\n\u2502   \u2502   \u251c\u2500\u2500 post_tool_use.py\n\u2502   \u2502   \u251c\u2500\u2500 send_event.py\n\u2502   \u2502   \u251c\u2500\u2500 utils/           # Shared utilities\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 tts/         # Text-to-speech providers\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 llm/         # LLM API helpers\n\u2502   \u2502   \u2502   \u251c\u2500\u2500 hitl.py      # Human-in-the-loop\n\u2502   \u2502   \u2502   \u2514\u2500\u2500 summarizer.py\n\u2502   \u2502   \u2514\u2500\u2500 validators/      # Hook validators\n\u2502   \u251c\u2500\u2500 status_lines/        # Custom status line scripts\n\u2502   \u2514\u2500\u2500 settings.json        # Hook configuration\n\u2514\u2500\u2500 logs/                    # Event log directory\n    \u251c\u2500\u2500 session_start.json\n    \u251c\u2500\u2500 user_prompt_submit.json\n    \u2514\u2500\u2500 {session_id}/        # Per-session logs\n```\n\n## Development\n\n### Adding New Hooks\n\n1. Create hook script in `.claude/hooks/`:\n   ```python\n   #!/usr/bin/env -S uv run --script\n   # Read stdin, process event, write to logs\n   ```\n\n2. Register in `.claude/settings.json`:\n   ```json\n   {\n     \"hooks\": {\n       \"YourEvent\": [{\n         \"hooks\": [{\n           \"type\": \"command\",\n           \"command\": \"uv run $CLAUDE_PROJECT_DIR/.claude/hooks/your_hook.py\"\n         }]\n       }]\n     }\n   }\n   ```\n\n### Hook Development Guidelines\n\n- All hooks receive JSON via stdin\n- Hooks should exit gracefully (status 0) even on errors\n- Log to `logs/` directory with structured JSON\n- Use `uv run --script` for dependency management\n\n## Requirements\n\n- Python 3.11+\n- [uv](https://github.com/astral-sh/uv) package manager\n- Claude Code CLI\n\n## License\n\n[Add your license here]\n\n## Contributing\n\n[Add contribution guidelines here]\n"
+    },
+    "permission_suggestions": [
+      {
+        "type": "setMode",
+        "mode": "acceptEdits",
+        "destination": "session"
+      }
+    ]
+  },
+  {
+    "session_id": "30ce6fc8-632a-45fd-8429-cec8b657956a",
+    "transcript_path": "/home/ben/.claude/projects/-home-ben-work-personal-claude-code-observability/30ce6fc8-632a-45fd-8429-cec8b657956a.jsonl",
+    "cwd": "/home/ben/work_personal/claude_code_observability",
+    "permission_mode": "default",
+    "hook_event_name": "PermissionRequest",
+    "tool_name": "Write",
+    "tool_input": {
+      "file_path": "/home/ben/work_personal/claude_code_observability/README.md",
+      "content": "# Claude Code Observability\n\nLogging and monitoring hooks for Claude Code sessions.\n\n## What This Does\n\nThis project implements Claude Code hooks that:\n\n1. **Log events to JSON files** in the `logs/` directory\n2. **Send events to an HTTP server** at `http://localhost:4000/events`\n3. **Display a custom status line** showing context window usage\n\n## Logged Events\n\nThe hooks capture these Claude Code events:\n\n- `SessionStart` - Session initialization (startup/resume/clear)\n- `SessionEnd` - Session termination\n- `UserPromptSubmit` - User prompts\n- `PreToolUse` - Before tool execution\n- `PostToolUse` - After successful tool execution\n- `PostToolUseFailure` - Tool execution failures\n- `PermissionRequest` - Permission prompts\n- `Notification` - System notifications\n- `SubagentStart` - Subagent creation\n- `SubagentStop` - Subagent termination\n- `PreCompact` - Context window compaction\n- `Stop` - Session interruptions\n\n## Log Files\n\nEvents are logged to:\n\n- `logs/session_start.json` - Session starts\n- `logs/user_prompt_submit.json` - User prompts\n- `logs/{session_id}/pre_tool_use.json` - Tool calls before execution\n- `logs/{session_id}/post_tool_use.json` - Tool completions\n\nThe log directory location can be customized with the `CLAUDE_HOOKS_LOG_DIR` environment variable.\n\n## Event Sending\n\nThe `send_event.py` hook sends events to an HTTP server with:\n\n- Event type and timestamp\n- Session ID and model name\n- Event-specific fields (tool names, error messages, etc.)\n- Optional AI-generated event summaries (when `--summarize` flag is used)\n- Optional chat transcript (when `--add-chat` flag is used)\n\nDefault server: `http://localhost:4000/events`\n\n## Tool Call Validation\n\nThe `pre_tool_use.py` hook blocks dangerous commands:\n\n- **Dangerous rm commands**: `rm -rf` is blocked except in allowed directories (`trees/`)\n- Tool call summaries are logged for Bash, Write, Edit, Read, Glob, Grep, WebFetch, WebSearch, Task, and other tools\n\n## Session Management\n\n`user_prompt_submit.py` stores:\n- User prompts in `.claude/data/sessions/{session_id}.json`\n- Optional AI-generated agent names for sessions (when `--name-agent` flag is used)\n\n## Status Line\n\n`status_line_v6.py` displays:\n```\n[Model] # [###---] | 42.5% used | ~115k left | session_id\n```\n\nShows:\n- Model name\n- Visual progress bar\n- Context window usage percentage (color-coded: green < 50%, yellow < 75%, red < 90%)\n- Remaining tokens\n- Session ID\n\n## Hook Configuration\n\nAll hooks are configured in `.claude/settings.json`. Each event type runs two hooks:\n1. Event-specific logging script\n2. `send_event.py` to send the event to the HTTP server\n\n## Requirements\n\nPython 3.8+ with dependencies managed by `uv` inline script declarations.\n\nCore dependencies:\n- `python-dotenv` (optional)\n- `anthropic` (for `send_event.py` summarization)\n\n## Project Structure\n\n```\n.claude/\n\u251c\u2500\u2500 hooks/\n\u2502   \u251c\u2500\u2500 session_start.py      # Logs session starts\n\u2502   \u251c\u2500\u2500 session_end.py         # Logs session ends\n\u2502   \u251c\u2500\u2500 user_prompt_submit.py  # Logs user prompts, manages session data\n\u2502   \u251c\u2500\u2500 pre_tool_use.py        # Validates and logs tool calls\n\u2502   \u251c\u2500\u2500 post_tool_use.py       # Logs tool completions\n\u2502   \u251c\u2500\u2500 send_event.py          # Sends events to HTTP server\n\u2502   \u251c\u2500\u2500 notification.py        # Logs notifications\n\u2502   \u251c\u2500\u2500 permission_request.py  # Logs permission requests\n\u2502   \u251c\u2500\u2500 stop.py                # Logs session stops\n\u2502   \u251c\u2500\u2500 subagent_start.py      # Logs subagent starts\n\u2502   \u251c\u2500\u2500 subagent_stop.py       # Logs subagent stops\n\u2502   \u251c\u2500\u2500 pre_compact.py         # Logs context compaction\n\u2502   \u251c\u2500\u2500 post_tool_use_failure.py # Logs tool failures\n\u2502   \u2514\u2500\u2500 utils/\n\u2502       \u251c\u2500\u2500 constants.py       # Log directory constants\n\u2502       \u251c\u2500\u2500 summarizer.py      # Event summarization\n\u2502       \u251c\u2500\u2500 model_extractor.py # Extract model from transcript\n\u2502       \u251c\u2500\u2500 hitl.py            # Human-in-the-loop utilities\n\u2502       \u251c\u2500\u2500 llm/               # LLM API helpers (anth.py, oai.py)\n\u2502       \u2514\u2500\u2500 tts/               # Text-to-speech (pyttsx3, openai, elevenlabs)\n\u251c\u2500\u2500 status_lines/\n\u2502   \u2514\u2500\u2500 status_line_v6.py      # Context window status display\n\u2514\u2500\u2500 settings.json              # Hook configuration\n\nlogs/                          # Event logs written here\n```\n"
+    },
+    "permission_suggestions": [
+      {
+        "type": "setMode",
+        "mode": "acceptEdits",
+        "destination": "session"
+      }
+    ]
+  },
+  {
+    "session_id": "30ce6fc8-632a-45fd-8429-cec8b657956a",
+    "transcript_path": "/home/ben/.claude/projects/-home-ben-work-personal-claude-code-observability/30ce6fc8-632a-45fd-8429-cec8b657956a.jsonl",
+    "cwd": "/home/ben/work_personal/claude_code_observability",
+    "permission_mode": "acceptEdits",
+    "hook_event_name": "PermissionRequest",
+    "tool_name": "Bash",
+    "tool_input": {
+      "command": "test -d docs && echo \"exists\" || echo \"does not exist\"",
+      "description": "Check if docs directory exists"
+    },
+    "permission_suggestions": [
+      {
+        "type": "addRules",
+        "rules": [
+          {
+            "toolName": "Bash",
+            "ruleContent": "test:*"
+          }
+        ],
+        "behavior": "allow",
+        "destination": "localSettings"
+      }
+    ]
+  },
+  {
+    "session_id": "30ce6fc8-632a-45fd-8429-cec8b657956a",
+    "transcript_path": "/home/ben/.claude/projects/-home-ben-work-personal-claude-code-observability/30ce6fc8-632a-45fd-8429-cec8b657956a.jsonl",
+    "cwd": "/home/ben/work_personal/claude_code_observability",
+    "permission_mode": "acceptEdits",
+    "hook_event_name": "PermissionRequest",
+    "tool_name": "Bash",
+    "tool_input": {
+      "command": "git add docs/plans/2026-02-13-event-infrastructure-design.md && git commit -m \"$(cat <<'EOF'\nAdd event infrastructure design document\n\nCo-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>\nEOF\n)\"",
+      "description": "Commit design document"
+    },
+    "permission_suggestions": [
+      {
+        "type": "addRules",
+        "rules": [
+          {
+            "toolName": "Bash",
+            "ruleContent": "git add:*"
+          },
+          {
+            "toolName": "Bash",
+            "ruleContent": "git commit:*"
+          }
+        ],
+        "behavior": "allow",
+        "destination": "localSettings"
+      }
+    ]
+  },
+  {
+    "session_id": "30ce6fc8-632a-45fd-8429-cec8b657956a",
+    "transcript_path": "/home/ben/.claude/projects/-home-ben-work-personal-claude-code-observability/30ce6fc8-632a-45fd-8429-cec8b657956a.jsonl",
+    "cwd": "/home/ben/work_personal/claude_code_observability",
+    "permission_mode": "acceptEdits",
+    "hook_event_name": "PermissionRequest",
+    "tool_name": "Bash",
+    "tool_input": {
+      "command": "cd /home/ben/work_personal/claude_code_observability/backend && python -m pip install -q -r requirements.txt",
+      "description": "Install backend dependencies"
+    },
+    "permission_suggestions": [
+      {
+        "type": "addRules",
+        "rules": [
+          {
+            "toolName": "Bash",
+            "ruleContent": "python -m pip install:*"
+          }
+        ],
+        "behavior": "allow",
+        "destination": "localSettings"
+      }
+    ]
+  },
+  {
+    "session_id": "30ce6fc8-632a-45fd-8429-cec8b657956a",
+    "transcript_path": "/home/ben/.claude/projects/-home-ben-work-personal-claude-code-observability/30ce6fc8-632a-45fd-8429-cec8b657956a.jsonl",
+    "cwd": "/home/ben/work_personal/claude_code_observability",
+    "permission_mode": "acceptEdits",
+    "hook_event_name": "PermissionRequest",
+    "tool_name": "Bash",
+    "tool_input": {
+      "command": "cd /home/ben/work_personal/claude_code_observability/backend && timeout 5 uvicorn main:app --host 127.0.0.1 --port 8000 &",
+      "description": "Start FastAPI server in background for testing"
+    }
+  },
+  {
+    "session_id": "30ce6fc8-632a-45fd-8429-cec8b657956a",
+    "transcript_path": "/home/ben/.claude/projects/-home-ben-work-personal-claude-code-observability/30ce6fc8-632a-45fd-8429-cec8b657956a.jsonl",
+    "cwd": "/home/ben/work_personal/claude_code_observability",
+    "permission_mode": "acceptEdits",
+    "hook_event_name": "PermissionRequest",
+    "tool_name": "Bash",
+    "tool_input": {
+      "command": "cd /home/ben/work_personal/claude_code_observability/backend && python -c \"from main import app; print('FastAPI app imported successfully')\"",
+      "description": "Test FastAPI app import"
+    },
+    "permission_suggestions": [
+      {
+        "type": "addRules",
+        "rules": [
+          {
+            "toolName": "Bash",
+            "ruleContent": "python:*"
+          }
+        ],
+        "behavior": "allow",
+        "destination": "localSettings"
+      }
+    ]
+  },
+  {
+    "session_id": "30ce6fc8-632a-45fd-8429-cec8b657956a",
+    "transcript_path": "/home/ben/.claude/projects/-home-ben-work-personal-claude-code-observability/30ce6fc8-632a-45fd-8429-cec8b657956a.jsonl",
+    "cwd": "/home/ben/work_personal/claude_code_observability",
+    "permission_mode": "acceptEdits",
+    "hook_event_name": "PermissionRequest",
+    "tool_name": "Bash",
+    "tool_input": {
+      "command": "cd /home/ben/work_personal/claude_code_observability/backend && uvicorn main:app --reload &",
+      "description": "Start FastAPI server in background",
+      "run_in_background": true
+    }
+  },
+  {
+    "session_id": "30ce6fc8-632a-45fd-8429-cec8b657956a",
+    "transcript_path": "/home/ben/.claude/projects/-home-ben-work-personal-claude-code-observability/30ce6fc8-632a-45fd-8429-cec8b657956a.jsonl",
+    "cwd": "/home/ben/work_personal/claude_code_observability",
+    "permission_mode": "acceptEdits",
+    "hook_event_name": "PermissionRequest",
+    "tool_name": "Bash",
+    "tool_input": {
+      "command": "cd /home/ben/work_personal/claude_code_observability/backend && sqlite3 events.db \".schema\"",
+      "description": "Verify database schema"
+    },
+    "permission_suggestions": [
+      {
+        "type": "addRules",
+        "rules": [
+          {
+            "toolName": "Bash",
+            "ruleContent": "sqlite3:*"
+          }
+        ],
+        "behavior": "allow",
+        "destination": "localSettings"
+      }
+    ]
+  },
+  {
+    "session_id": "30ce6fc8-632a-45fd-8429-cec8b657956a",
+    "transcript_path": "/home/ben/.claude/projects/-home-ben-work-personal-claude-code-observability/30ce6fc8-632a-45fd-8429-cec8b657956a.jsonl",
+    "cwd": "/home/ben/work_personal/claude_code_observability",
+    "permission_mode": "acceptEdits",
+    "hook_event_name": "PermissionRequest",
+    "tool_name": "Bash",
+    "tool_input": {
+      "command": "pkill -f \"uvicorn main:app\"",
+      "description": "Stop the FastAPI server"
+    },
+    "permission_suggestions": [
+      {
+        "type": "addRules",
+        "rules": [
+          {
+            "toolName": "Bash",
+            "ruleContent": "pkill:*"
+          }
+        ],
+        "behavior": "allow",
+        "destination": "localSettings"
+      }
+    ]
+  },
+  {
+    "session_id": "30ce6fc8-632a-45fd-8429-cec8b657956a",
+    "transcript_path": "/home/ben/.claude/projects/-home-ben-work-personal-claude-code-observability/30ce6fc8-632a-45fd-8429-cec8b657956a.jsonl",
+    "cwd": "/home/ben/work_personal/claude_code_observability",
+    "permission_mode": "acceptEdits",
+    "hook_event_name": "PermissionRequest",
+    "tool_name": "Bash",
+    "tool_input": {
+      "command": "cd /home/ben/work_personal/claude_code_observability/backend && python3 -c \"\nfrom events import save_event, get_events, get_active_sessions, get_tool_stats\nimport time\n\n# Test save_event\nevent_id = save_event(\n    timestamp=int(time.time() * 1000),\n    session_id='test-session-001',\n    hook_event_type='PreToolUse',\n    source_app='test',\n    model_name='claude-sonnet-4-5',\n    tool_name='Read',\n    payload={'file_path': '/test/file.py'},\n    summary='Testing event storage'\n)\nprint(f'Saved event ID: {event_id}')\n\n# Test get_events\nevents = get_events(limit=10)\nprint(f'Found {len(events)} events')\nif events:\n    print('Latest event:', events[0])\n\n# Test get_active_sessions\nsessions = get_active_sessions(minutes=5)\nprint(f'Active sessions: {len(sessions)}')\n\n# Test get_tool_stats\nstats = get_tool_stats(hours=1)\nprint(f'Tool stats: {stats}')\n\"",
+      "description": "Test event storage and query functions"
+    },
+    "permission_suggestions": [
+      {
+        "type": "addRules",
+        "rules": [
+          {
+            "toolName": "Bash",
+            "ruleContent": "python3:*"
+          }
+        ],
+        "behavior": "allow",
+        "destination": "localSettings"
+      }
+    ]
+  },
+  {
+    "session_id": "30ce6fc8-632a-45fd-8429-cec8b657956a",
+    "transcript_path": "/home/ben/.claude/projects/-home-ben-work-personal-claude-code-observability/30ce6fc8-632a-45fd-8429-cec8b657956a.jsonl",
+    "cwd": "/home/ben/work_personal/claude_code_observability",
+    "permission_mode": "acceptEdits",
+    "hook_event_name": "PermissionRequest",
+    "tool_name": "Bash",
+    "tool_input": {
+      "command": "cd /home/ben/work_personal/claude_code_observability/backend && nohup uvicorn main:app --reload --host 0.0.0.0 --port 8000 > server.log 2>&1 &",
+      "description": "Start FastAPI server in background"
+    }
+  },
+  {
+    "session_id": "30ce6fc8-632a-45fd-8429-cec8b657956a",
+    "transcript_path": "/home/ben/.claude/projects/-home-ben-work-personal-claude-code-observability/30ce6fc8-632a-45fd-8429-cec8b657956a.jsonl",
+    "cwd": "/home/ben/work_personal/claude_code_observability",
+    "permission_mode": "acceptEdits",
+    "hook_event_name": "PermissionRequest",
+    "tool_name": "Bash",
+    "tool_input": {
+      "command": "cd /home/ben/work_personal/claude_code_observability/backend && lsof -i :8000",
+      "description": "Check if FastAPI server is running on port 8000"
+    },
+    "permission_suggestions": [
+      {
+        "type": "addRules",
+        "rules": [
+          {
+            "toolName": "Bash",
+            "ruleContent": "lsof:*"
+          }
+        ],
+        "behavior": "allow",
+        "destination": "localSettings"
+      }
+    ]
+  },
+  {
+    "session_id": "30ce6fc8-632a-45fd-8429-cec8b657956a",
+    "transcript_path": "/home/ben/.claude/projects/-home-ben-work-personal-claude-code-observability/30ce6fc8-632a-45fd-8429-cec8b657956a.jsonl",
+    "cwd": "/home/ben/work_personal/claude_code_observability",
+    "permission_mode": "acceptEdits",
+    "hook_event_name": "PermissionRequest",
+    "tool_name": "Bash",
+    "tool_input": {
+      "command": "cd /home/ben/work_personal/claude_code_observability/backend && uvicorn main:app --reload --port 8000 &",
+      "description": "Start the FastAPI backend server in the background",
+      "run_in_background": true
+    }
+  },
+  {
+    "session_id": "30ce6fc8-632a-45fd-8429-cec8b657956a",
+    "transcript_path": "/home/ben/.claude/projects/-home-ben-work-personal-claude-code-observability/30ce6fc8-632a-45fd-8429-cec8b657956a.jsonl",
+    "cwd": "/home/ben/work_personal/claude_code_observability",
+    "permission_mode": "acceptEdits",
+    "hook_event_name": "PermissionRequest",
+    "tool_name": "Bash",
+    "tool_input": {
+      "command": "sleep 3 && curl -N -s http://localhost:8000/stream &",
+      "description": "Connect to SSE stream endpoint",
+      "run_in_background": true
+    }
+  },
+  {
+    "session_id": "30ce6fc8-632a-45fd-8429-cec8b657956a",
+    "transcript_path": "/home/ben/.claude/projects/-home-ben-work-personal-claude-code-observability/30ce6fc8-632a-45fd-8429-cec8b657956a.jsonl",
+    "cwd": "/home/ben/work_personal/claude_code_observability",
+    "permission_mode": "acceptEdits",
+    "hook_event_name": "PermissionRequest",
+    "tool_name": "Bash",
+    "tool_input": {
+      "command": "timeout 5 curl -N http://localhost:8000/stream 2>&1 &\nCURL_PID=$!\nsleep 1\ncurl -X POST http://localhost:8000/events \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\n    \"timestamp\": 1707913300,\n    \"session_id\": \"test-sse-2\",\n    \"hook_event_type\": \"model_response\",\n    \"source_app\": \"claude-code\",\n    \"model_name\": \"claude-3-opus\",\n    \"summary\": \"SSE Test Event\"\n  }'\nwait $CURL_PID 2>/dev/null || true",
+      "description": "Test SSE streaming with event broadcast"
+    }
+  }
+]

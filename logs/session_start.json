@@ -1,0 +1,9 @@
+[
+  {
+    "session_id": "30ce6fc8-632a-45fd-8429-cec8b657956a",
+    "hook_event_name": "SessionStart",
+    "source": "startup",
+    "model": "claude-sonnet-4-5-20250929",
+    "agent_type": ""
+  }
+]

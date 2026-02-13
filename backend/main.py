@@ -1,10 +1,12 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 from typing import Optional
 from database import init_db
 from events import save_event, get_events, get_active_sessions, get_tool_stats
 import asyncio
+import json
 
 app = FastAPI(title="Claude Code Observability API")
 
@@ -90,3 +92,27 @@ def tool_statistics(hours: int = 1):
     """Get tool usage statistics."""
     stats = get_tool_stats(hours=hours)
     return stats
+
+async def event_generator():
+    """Generate SSE events for connected clients."""
+    queue = asyncio.Queue()
+    sse_clients.append(queue)
+
+    try:
+        while True:
+            event_data = await queue.get()
+            yield f"data: {json.dumps(event_data)}\n\n"
+    except asyncio.CancelledError:
+        sse_clients.remove(queue)
+
+@app.get("/stream")
+async def stream_events():
+    """SSE endpoint for real-time event streaming."""
+    return StreamingResponse(
+        event_generator(),
+        media_type="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache",
+            "Connection": "keep-alive",
+        }
+    )

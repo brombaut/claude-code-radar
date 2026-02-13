@@ -1,0 +1,20 @@
+{
+  "session_id": "30ce6fc8-632a-45fd-8429-cec8b657956a",
+  "prompts": [
+    "Can you create a README file in this repo?",
+    "Please dont inferr/assume anything, only write down stuff that you learn from reading files",
+    "Thanks. Now with that knowledge of the hooks in mind, can you come up with a plan will implement the necessary infrastructure to handle/consume the output from these events?",
+    "For now lets focus on Real-time monitoring dashboard to watch Claude Code sessions live, I think I want to persist the events to a light database, which will then be queried from a frontend",
+    "  D) All of the above in different views  ",
+    "E) I'm flexible - recommend what makes sense for this use case   ",
+    " D) I don't mind - prioritize ease of development and iteration",
+    "Between websockets and server-sent events, whatever you recommend for ease of development ",
+    "Lets do FastAPI + SQLite + SSE + Vite + React for the frontend",
+    "Yep sounds good",
+    "Sounds good",
+    "Yep sounds good",
+    "Makes sense",
+    "Sure, try to keep testing lightweight",
+    "Lets try the subagent-driven option"
+  ]
+}
