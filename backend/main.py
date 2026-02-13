@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from database import init_db
 
 app = FastAPI(title="Claude Code Observability API")
 
@@ -10,6 +11,10 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+@app.on_event("startup")
+def startup():
+    init_db()
 
 @app.get("/")
 def root():
