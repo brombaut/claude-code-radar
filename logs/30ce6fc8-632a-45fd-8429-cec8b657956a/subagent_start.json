@@ -142,5 +142,21 @@
     "hook_event_name": "SubagentStart",
     "agent_id": "a7bdba7",
     "agent_type": "builder"
+  },
+  {
+    "session_id": "30ce6fc8-632a-45fd-8429-cec8b657956a",
+    "transcript_path": "/home/ben/.claude/projects/-home-ben-work-personal-claude-code-observability/30ce6fc8-632a-45fd-8429-cec8b657956a.jsonl",
+    "cwd": "/home/ben/work_personal/claude_code_observability",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "aa941e6",
+    "agent_type": "builder"
+  },
+  {
+    "session_id": "30ce6fc8-632a-45fd-8429-cec8b657956a",
+    "transcript_path": "/home/ben/.claude/projects/-home-ben-work-personal-claude-code-observability/30ce6fc8-632a-45fd-8429-cec8b657956a.jsonl",
+    "cwd": "/home/ben/work_personal/claude_code_observability",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "ac8ecf4",
+    "agent_type": "builder"
   }
 ]
