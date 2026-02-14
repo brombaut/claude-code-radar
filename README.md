@@ -122,3 +122,118 @@ Core dependencies:
 
 logs/                          # Event logs written here
 ```
+
+## Running the Dashboard
+
+The observability dashboard provides real-time monitoring and analysis of Claude Code sessions.
+
+### Prerequisites
+
+- Python 3.11 or higher
+- Node.js 18 or higher
+- npm or yarn
+
+### Backend Setup
+
+1. Navigate to the backend directory:
+```bash
+cd dashboard/backend
+```
+
+2. Create a virtual environment (optional but recommended):
+```bash
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+```
+
+3. Install dependencies:
+```bash
+pip install -r requirements.txt
+```
+
+4. Start the backend server:
+```bash
+python server.py
+```
+
+The backend server will start on `http://localhost:4000`
+
+### Frontend Setup
+
+1. In a new terminal, navigate to the frontend directory:
+```bash
+cd dashboard/frontend
+```
+
+2. Install dependencies:
+```bash
+npm install
+# or
+yarn install
+```
+
+3. Start the development server:
+```bash
+npm run dev
+# or
+yarn dev
+```
+
+The frontend will be available at `http://localhost:5173`
+
+### Testing the Dashboard
+
+Test the event processing and dashboard views:
+
+```bash
+# From the project root
+python dashboard/backend/test_events.py
+```
+
+This will:
+- Send sample events to the backend
+- Create test sessions with various tools and errors
+- Populate the dashboard with example data
+
+### Usage Guide
+
+1. **Start both servers**: Backend on port 4000, frontend on port 5173
+2. **Configure Claude Code**: Ensure `.claude/settings.json` has hooks configured to send events to `http://localhost:4000/events`
+3. **Start a Claude Code session**: Events will automatically flow to the dashboard
+4. **Monitor in real-time**: Open `http://localhost:5173` to see live session data
+
+### Dashboard Views
+
+#### Sessions View
+- List of all Claude Code sessions
+- Session status (active/completed)
+- Duration and event counts
+- Model information
+- Click to view session details
+
+#### Session Detail View
+- Complete event timeline
+- Tool usage statistics
+- Error tracking
+- Token usage over time
+- Interactive charts for:
+  - Tool usage frequency
+  - Token consumption
+  - Error distribution
+
+#### Real-time Monitoring
+- Live event stream
+- Active session indicators
+- Performance metrics
+- Error alerts
+
+### API Endpoints
+
+The backend provides these REST endpoints:
+
+- `POST /events` - Receive events from Claude Code hooks
+- `GET /api/sessions` - List all sessions
+- `GET /api/sessions/{session_id}` - Get session details
+- `GET /api/events` - Query events with filtering
+- `GET /api/stats` - Get aggregate statistics
+- `WebSocket /ws` - Real-time event stream
