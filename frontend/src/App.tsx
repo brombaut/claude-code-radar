@@ -8,35 +8,66 @@ function App() {
 
   return (
     <div style={{
-      padding: '2rem',
-      height: '100vh',
+      minHeight: '100vh',
       display: 'flex',
       flexDirection: 'column',
-      backgroundColor: '#fafafa'
+      backgroundColor: 'var(--bg-primary)'
     }}>
-      <div style={{ marginBottom: '1.5rem' }}>
-        <h1 style={{ margin: '0 0 0.5rem 0' }}>Claude Code Radar</h1>
+      {/* Header */}
+      <div style={{
+        backgroundColor: 'var(--bg-secondary)',
+        borderBottom: '1px solid var(--border-color)',
+        padding: '1.5rem 2rem'
+      }}>
+        <h1 style={{
+          margin: '0 0 0.75rem 0',
+          color: 'var(--text-primary)'
+        }}>
+          Claude Code Radar
+        </h1>
         <div style={{
           display: 'flex',
-          gap: '1rem',
+          gap: '2rem',
           alignItems: 'center',
-          fontSize: '0.875rem'
+          fontSize: '0.875rem',
+          color: 'var(--text-secondary)'
         }}>
-          <span>Connection: {connected ? '🟢 Connected' : '🔴 Disconnected'}</span>
-          <span>Total Events: {events.length}</span>
+          <span style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.5rem'
+          }}>
+            <span style={{
+              width: '8px',
+              height: '8px',
+              borderRadius: '50%',
+              backgroundColor: connected ? 'var(--accent-green)' : 'var(--accent-red)'
+            }}></span>
+            {connected ? 'Connected' : 'Disconnected'}
+          </span>
+          <span>
+            <strong style={{ color: 'var(--text-primary)' }}>{events.length}</strong> events
+          </span>
         </div>
       </div>
 
-      <div style={{ marginBottom: '2rem' }}>
-        <SessionOverview />
-      </div>
+      {/* Main content */}
+      <div style={{
+        flex: 1,
+        padding: '2rem',
+        overflow: 'auto'
+      }}>
+        <div style={{ marginBottom: '2rem' }}>
+          <SessionOverview />
+        </div>
 
-      <div style={{ marginBottom: '2rem' }}>
-        <ToolAnalytics />
-      </div>
+        <div style={{ marginBottom: '2rem' }}>
+          <ToolAnalytics />
+        </div>
 
-      <div style={{ flex: 1, minHeight: 0 }}>
-        <EventStream events={events} />
+        <div style={{ minHeight: '400px' }}>
+          <EventStream events={events} />
+        </div>
       </div>
     </div>
   )

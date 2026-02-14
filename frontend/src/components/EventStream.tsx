@@ -7,13 +7,18 @@ interface EventStreamProps {
 }
 
 const EVENT_COLORS: Record<string, string> = {
-  'model_request': '#3b82f6',
-  'model_response': '#10b981',
-  'tool_invocation': '#f59e0b',
-  'tool_response': '#a855f7',
-  'error': '#ef4444',
-  'session_start': '#6b7280',
-  'session_end': '#6b7280',
+  'model_request': '#58a6ff',
+  'model_response': '#3fb950',
+  'tool_invocation': '#f0883e',
+  'tool_response': '#bc8cff',
+  'error': '#f85149',
+  'session_start': '#768390',
+  'session_end': '#768390',
+  'PreToolUse': '#58a6ff',
+  'PostToolUse': '#3fb950',
+  'PostToolUseFailure': '#f85149',
+  'SessionStart': '#768390',
+  'UserPromptSubmit': '#bc8cff',
 }
 
 export function EventStream({ events, maxEvents = 100 }: EventStreamProps) {
@@ -48,31 +53,40 @@ export function EventStream({ events, maxEvents = 100 }: EventStreamProps) {
       display: 'flex',
       flexDirection: 'column',
       height: '100%',
-      border: '1px solid #e5e7eb',
-      borderRadius: '0.5rem',
-      overflow: 'hidden'
+      minHeight: '500px',
+      border: '1px solid var(--border-color)',
+      borderRadius: '8px',
+      overflow: 'hidden',
+      backgroundColor: 'var(--bg-secondary)'
     }}>
       <div style={{
-        padding: '1rem',
-        borderBottom: '1px solid #e5e7eb',
-        backgroundColor: '#f9fafb',
+        padding: '1.25rem',
+        borderBottom: '1px solid var(--border-color)',
+        backgroundColor: 'var(--bg-tertiary)',
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center'
       }}>
         <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-          <h2 style={{ margin: 0, fontSize: '1.125rem', fontWeight: '600' }}>
+          <h2 style={{
+            margin: 0,
+            fontSize: '1.125rem',
+            fontWeight: '600',
+            color: 'var(--text-primary)'
+          }}>
             Event Stream
           </h2>
           <select
             value={filter}
             onChange={(e) => setFilter(e.target.value)}
             style={{
-              padding: '0.25rem 0.5rem',
-              borderRadius: '0.25rem',
-              border: '1px solid #d1d5db',
-              backgroundColor: 'white',
-              fontSize: '0.875rem'
+              padding: '0.5rem 0.75rem',
+              borderRadius: '6px',
+              border: '1px solid var(--border-color)',
+              backgroundColor: 'var(--bg-secondary)',
+              color: 'var(--text-primary)',
+              fontSize: '0.875rem',
+              cursor: 'pointer'
             }}
           >
             <option value="all">All Events ({events.length})</option>
@@ -87,12 +101,15 @@ export function EventStream({ events, maxEvents = 100 }: EventStreamProps) {
           display: 'flex',
           alignItems: 'center',
           gap: '0.5rem',
-          fontSize: '0.875rem'
+          fontSize: '0.875rem',
+          color: 'var(--text-secondary)',
+          cursor: 'pointer'
         }}>
           <input
             type="checkbox"
             checked={autoScroll}
             onChange={(e) => setAutoScroll(e.target.checked)}
+            style={{ cursor: 'pointer' }}
           />
           Auto-scroll
         </label>
@@ -103,29 +120,30 @@ export function EventStream({ events, maxEvents = 100 }: EventStreamProps) {
         style={{
           flex: 1,
           overflow: 'auto',
-          padding: '0.5rem'
+          padding: '1rem'
         }}
       >
         {displayedEvents.length === 0 ? (
           <div style={{
-            padding: '2rem',
+            padding: '3rem',
             textAlign: 'center',
-            color: '#6b7280'
+            color: 'var(--text-secondary)'
           }}>
             {filter === 'all' ? 'No events yet...' : `No ${filter} events`}
           </div>
         ) : (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
             {displayedEvents.map((event) => (
               <div
                 key={event.id}
                 style={{
-                  padding: '0.75rem',
-                  borderLeft: `4px solid ${getEventColor(event.hook_event_type)}`,
-                  backgroundColor: '#ffffff',
-                  border: '1px solid #e5e7eb',
-                  borderRadius: '0.25rem',
-                  fontSize: '0.875rem'
+                  padding: '1rem',
+                  borderLeft: `3px solid ${getEventColor(event.hook_event_type)}`,
+                  backgroundColor: 'var(--bg-tertiary)',
+                  border: '1px solid var(--border-color)',
+                  borderRadius: '6px',
+                  fontSize: '0.875rem',
+                  transition: 'border-color 0.2s'
                 }}
               >
                 <div style={{
@@ -133,7 +151,7 @@ export function EventStream({ events, maxEvents = 100 }: EventStreamProps) {
                   justifyContent: 'space-between',
                   marginBottom: '0.5rem'
                 }}>
-                  <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+                  <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
                     <span style={{
                       fontWeight: '600',
                       color: getEventColor(event.hook_event_type)
@@ -142,22 +160,31 @@ export function EventStream({ events, maxEvents = 100 }: EventStreamProps) {
                     </span>
                     {event.tool_name && (
                       <span style={{
-                        padding: '0.125rem 0.5rem',
-                        backgroundColor: '#f3f4f6',
-                        borderRadius: '0.25rem',
-                        fontSize: '0.75rem'
+                        padding: '0.25rem 0.5rem',
+                        backgroundColor: 'var(--bg-secondary)',
+                        borderRadius: '4px',
+                        fontSize: '0.75rem',
+                        fontFamily: 'monospace',
+                        color: 'var(--accent-orange)'
                       }}>
                         {event.tool_name}
                       </span>
                     )}
                   </div>
-                  <span style={{ color: '#6b7280', fontSize: '0.75rem' }}>
+                  <span style={{
+                    color: 'var(--text-secondary)',
+                    fontSize: '0.75rem'
+                  }}>
                     {formatTimestamp(event.timestamp)}
                   </span>
                 </div>
 
                 {event.summary && (
-                  <div style={{ color: '#374151', marginBottom: '0.25rem' }}>
+                  <div style={{
+                    color: 'var(--text-primary)',
+                    marginBottom: '0.5rem',
+                    lineHeight: '1.5'
+                  }}>
                     {event.summary}
                   </div>
                 )}
@@ -166,30 +193,42 @@ export function EventStream({ events, maxEvents = 100 }: EventStreamProps) {
                   display: 'flex',
                   gap: '1rem',
                   fontSize: '0.75rem',
-                  color: '#6b7280'
+                  color: 'var(--text-secondary)',
+                  flexWrap: 'wrap'
                 }}>
-                  <span>Session: {event.session_id.slice(0, 8)}</span>
-                  {event.source_app && <span>App: {event.source_app}</span>}
-                  {event.model_name && <span>Model: {event.model_name}</span>}
+                  <span>
+                    Session: <span style={{ fontFamily: 'monospace', color: 'var(--accent-blue)' }}>
+                      {event.session_id.slice(0, 8)}
+                    </span>
+                  </span>
+                  {event.source_app && (
+                    <span>App: <span style={{ color: 'var(--text-primary)' }}>{event.source_app}</span></span>
+                  )}
+                  {event.model_name && (
+                    <span>Model: <span style={{ color: 'var(--text-primary)' }}>{event.model_name}</span></span>
+                  )}
                 </div>
 
                 {event.payload && Object.keys(event.payload).length > 0 && (
-                  <details style={{ marginTop: '0.5rem' }}>
+                  <details style={{ marginTop: '0.75rem' }}>
                     <summary style={{
                       cursor: 'pointer',
                       fontSize: '0.75rem',
-                      color: '#6b7280'
+                      color: 'var(--text-secondary)',
+                      userSelect: 'none'
                     }}>
-                      Payload
+                      View Payload
                     </summary>
                     <pre style={{
-                      marginTop: '0.25rem',
-                      padding: '0.5rem',
-                      backgroundColor: '#f9fafb',
-                      borderRadius: '0.25rem',
+                      marginTop: '0.5rem',
+                      padding: '0.75rem',
+                      backgroundColor: 'var(--bg-primary)',
+                      borderRadius: '4px',
                       fontSize: '0.75rem',
                       overflow: 'auto',
-                      maxHeight: '200px'
+                      maxHeight: '200px',
+                      color: 'var(--text-primary)',
+                      border: '1px solid var(--border-color)'
                     }}>
                       {JSON.stringify(event.payload, null, 2)}
                     </pre>

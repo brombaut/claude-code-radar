@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { ToolStats, fetchToolStats } from '../api/client'
+import { type ToolStats, fetchToolStats } from '../api/client'
 
 const TIME_RANGES = [
   { label: 'Last 15 min', hours: 0.25 },
@@ -43,26 +43,34 @@ export function ToolAnalytics() {
 
   return (
     <div style={{
-      padding: '1rem',
-      backgroundColor: 'white',
-      borderRadius: '4px',
-      border: '1px solid #e0e0e0'
+      padding: '1.5rem',
+      backgroundColor: 'var(--bg-secondary)',
+      borderRadius: '8px',
+      border: '1px solid var(--border-color)'
     }}>
       <div style={{
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
-        marginBottom: '1rem'
+        marginBottom: '1.5rem'
       }}>
-        <h3 style={{ margin: 0 }}>Tool Analytics</h3>
+        <h3 style={{
+          margin: 0,
+          color: 'var(--text-primary)'
+        }}>
+          Tool Analytics
+        </h3>
         <select
           value={selectedRange}
           onChange={(e) => setSelectedRange(Number(e.target.value))}
           style={{
-            padding: '0.25rem 0.5rem',
-            border: '1px solid #ccc',
-            borderRadius: '4px',
-            fontSize: '0.875rem'
+            padding: '0.5rem 0.75rem',
+            border: '1px solid var(--border-color)',
+            borderRadius: '6px',
+            fontSize: '0.875rem',
+            backgroundColor: 'var(--bg-tertiary)',
+            color: 'var(--text-primary)',
+            cursor: 'pointer'
           }}
         >
           {TIME_RANGES.map(range => (
@@ -74,18 +82,23 @@ export function ToolAnalytics() {
       </div>
 
       {loading && !stats && (
-        <div style={{ textAlign: 'center', padding: '1rem', color: '#666' }}>
+        <div style={{
+          textAlign: 'center',
+          padding: '2rem',
+          color: 'var(--text-secondary)'
+        }}>
           Loading...
         </div>
       )}
 
       {error && (
         <div style={{
-          padding: '0.5rem',
-          backgroundColor: '#fee',
-          color: '#c00',
-          borderRadius: '4px',
-          fontSize: '0.875rem'
+          padding: '0.75rem',
+          backgroundColor: 'rgba(248, 81, 73, 0.1)',
+          color: 'var(--accent-red)',
+          borderRadius: '6px',
+          fontSize: '0.875rem',
+          border: '1px solid rgba(248, 81, 73, 0.3)'
         }}>
           {error}
         </div>
@@ -95,68 +108,118 @@ export function ToolAnalytics() {
         <>
           <div style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))',
             gap: '1rem',
-            marginBottom: '1.5rem'
+            marginBottom: '2rem'
           }}>
             <div style={{
-              padding: '0.75rem',
-              backgroundColor: '#f8f9fa',
-              borderRadius: '4px'
+              padding: '1rem',
+              backgroundColor: 'var(--bg-tertiary)',
+              borderRadius: '8px',
+              border: '1px solid var(--border-color)'
             }}>
-              <div style={{ fontSize: '0.75rem', color: '#666', marginBottom: '0.25rem' }}>
-                Total Tool Calls
+              <div style={{
+                fontSize: '0.75rem',
+                color: 'var(--text-secondary)',
+                marginBottom: '0.5rem',
+                textTransform: 'uppercase',
+                letterSpacing: '0.05em'
+              }}>
+                Total Calls
               </div>
-              <div style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>
+              <div style={{
+                fontSize: '1.75rem',
+                fontWeight: 'bold',
+                color: 'var(--text-primary)'
+              }}>
                 {totalUsage.toLocaleString()}
               </div>
             </div>
 
             <div style={{
-              padding: '0.75rem',
-              backgroundColor: '#e8f5e9',
-              borderRadius: '4px'
+              padding: '1rem',
+              backgroundColor: 'var(--bg-tertiary)',
+              borderRadius: '8px',
+              border: '1px solid var(--border-color)'
             }}>
-              <div style={{ fontSize: '0.75rem', color: '#666', marginBottom: '0.25rem' }}>
+              <div style={{
+                fontSize: '0.75rem',
+                color: 'var(--text-secondary)',
+                marginBottom: '0.5rem',
+                textTransform: 'uppercase',
+                letterSpacing: '0.05em'
+              }}>
                 Success Rate
               </div>
-              <div style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#2e7d32' }}>
+              <div style={{
+                fontSize: '1.75rem',
+                fontWeight: 'bold',
+                color: 'var(--accent-green)'
+              }}>
                 {successRate}%
               </div>
             </div>
 
             <div style={{
-              padding: '0.75rem',
-              backgroundColor: '#e3f2fd',
-              borderRadius: '4px'
+              padding: '1rem',
+              backgroundColor: 'var(--bg-tertiary)',
+              borderRadius: '8px',
+              border: '1px solid var(--border-color)'
             }}>
-              <div style={{ fontSize: '0.75rem', color: '#666', marginBottom: '0.25rem' }}>
+              <div style={{
+                fontSize: '0.75rem',
+                color: 'var(--text-secondary)',
+                marginBottom: '0.5rem',
+                textTransform: 'uppercase',
+                letterSpacing: '0.05em'
+              }}>
                 Successful
               </div>
-              <div style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#1565c0' }}>
+              <div style={{
+                fontSize: '1.75rem',
+                fontWeight: 'bold',
+                color: 'var(--accent-blue)'
+              }}>
                 {successCount.toLocaleString()}
               </div>
             </div>
 
             <div style={{
-              padding: '0.75rem',
-              backgroundColor: '#ffebee',
-              borderRadius: '4px'
+              padding: '1rem',
+              backgroundColor: 'var(--bg-tertiary)',
+              borderRadius: '8px',
+              border: '1px solid var(--border-color)'
             }}>
-              <div style={{ fontSize: '0.75rem', color: '#666', marginBottom: '0.25rem' }}>
+              <div style={{
+                fontSize: '0.75rem',
+                color: 'var(--text-secondary)',
+                marginBottom: '0.5rem',
+                textTransform: 'uppercase',
+                letterSpacing: '0.05em'
+              }}>
                 Failed
               </div>
-              <div style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#c62828' }}>
+              <div style={{
+                fontSize: '1.75rem',
+                fontWeight: 'bold',
+                color: 'var(--accent-red)'
+              }}>
                 {failureCount.toLocaleString()}
               </div>
             </div>
           </div>
 
           <div>
-            <h4 style={{ margin: '0 0 0.75rem 0', fontSize: '0.875rem', color: '#666' }}>
+            <h4 style={{
+              margin: '0 0 1rem 0',
+              fontSize: '0.875rem',
+              color: 'var(--text-secondary)',
+              textTransform: 'uppercase',
+              letterSpacing: '0.05em'
+            }}>
               Tool Usage Breakdown
             </h4>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
               {stats.tool_usage && stats.tool_usage.length > 0 ? (
                 stats.tool_usage
                   .sort((a, b) => b.count - a.count)
@@ -170,42 +233,53 @@ export function ToolAnalytics() {
                         gap: '1rem'
                       }}>
                         <div style={{
-                          flex: '0 0 150px',
+                          flex: '0 0 180px',
                           fontSize: '0.875rem',
                           fontFamily: 'monospace',
                           overflow: 'hidden',
                           textOverflow: 'ellipsis',
-                          whiteSpace: 'nowrap'
+                          whiteSpace: 'nowrap',
+                          color: 'var(--text-primary)'
                         }}>
                           {tool.tool_name}
                         </div>
                         <div style={{
                           flex: 1,
-                          backgroundColor: '#f0f0f0',
-                          borderRadius: '2px',
-                          height: '20px',
+                          backgroundColor: 'var(--bg-primary)',
+                          borderRadius: '4px',
+                          height: '24px',
                           position: 'relative',
                           overflow: 'hidden'
                         }}>
                           <div style={{
                             width: `${percentage}%`,
                             height: '100%',
-                            backgroundColor: '#4caf50',
-                            transition: 'width 0.3s'
+                            backgroundColor: 'var(--accent-blue)',
+                            transition: 'width 0.3s',
+                            borderRadius: '4px'
                           }} />
                         </div>
                         <div style={{
-                          flex: '0 0 80px',
+                          flex: '0 0 100px',
                           textAlign: 'right',
-                          fontSize: '0.875rem'
+                          fontSize: '0.875rem',
+                          color: 'var(--text-secondary)'
                         }}>
-                          {tool.count} ({percentage.toFixed(1)}%)
+                          <span style={{ color: 'var(--text-primary)', fontWeight: '500' }}>
+                            {tool.count}
+                          </span>
+                          {' '}({percentage.toFixed(1)}%)
                         </div>
                       </div>
                     )
                   })
               ) : (
-                <div style={{ color: '#666', fontSize: '0.875rem', textAlign: 'center' }}>
+                <div style={{
+                  color: 'var(--text-secondary)',
+                  fontSize: '0.875rem',
+                  textAlign: 'center',
+                  padding: '2rem'
+                }}>
                   No tool usage data available
                 </div>
               )}

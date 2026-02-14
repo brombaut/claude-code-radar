@@ -53,47 +53,57 @@ export function SessionOverview() {
 
   return (
     <div>
-      <h2 style={{ marginTop: 0, marginBottom: '1rem' }}>Active Sessions</h2>
+      <h2 style={{
+        marginTop: 0,
+        marginBottom: '1rem',
+        color: 'var(--text-primary)'
+      }}>
+        Active Sessions
+      </h2>
       {sessions.length === 0 ? (
         <div style={{
           padding: '2rem',
           textAlign: 'center',
-          backgroundColor: 'white',
-          borderRadius: '0.5rem',
-          border: '1px solid #e5e7eb'
+          backgroundColor: 'var(--bg-secondary)',
+          borderRadius: '8px',
+          border: '1px solid var(--border-color)',
+          color: 'var(--text-secondary)'
         }}>
           No active sessions in the last 60 minutes
         </div>
       ) : (
         <div style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
+          gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))',
           gap: '1rem'
         }}>
           {sessions.map((session) => (
             <div
               key={session.session_id}
               style={{
-                backgroundColor: 'white',
-                borderRadius: '0.5rem',
-                padding: '1rem',
-                border: '1px solid #e5e7eb',
-                boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1)'
+                backgroundColor: 'var(--bg-secondary)',
+                borderRadius: '8px',
+                padding: '1.25rem',
+                border: '1px solid var(--border-color)',
+                transition: 'border-color 0.2s'
               }}
             >
-              <div style={{ marginBottom: '0.5rem' }}>
+              <div style={{ marginBottom: '0.75rem' }}>
                 <div style={{
                   fontWeight: '600',
-                  fontSize: '0.875rem',
-                  color: '#6b7280',
-                  marginBottom: '0.25rem'
+                  fontSize: '0.75rem',
+                  color: 'var(--text-secondary)',
+                  marginBottom: '0.5rem',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.05em'
                 }}>
                   Session ID
                 </div>
                 <div style={{
                   fontFamily: 'monospace',
                   fontSize: '0.875rem',
-                  wordBreak: 'break-all'
+                  wordBreak: 'break-all',
+                  color: 'var(--accent-blue)'
                 }}>
                   {session.session_id}
                 </div>
@@ -102,20 +112,21 @@ export function SessionOverview() {
               <div style={{
                 display: 'grid',
                 gridTemplateColumns: '1fr 1fr',
-                gap: '0.5rem',
-                marginTop: '0.75rem'
+                gap: '1rem',
+                marginTop: '1rem'
               }}>
                 <div>
                   <div style={{
                     fontSize: '0.75rem',
-                    color: '#6b7280',
-                    marginBottom: '0.125rem'
+                    color: 'var(--text-secondary)',
+                    marginBottom: '0.25rem'
                   }}>
                     Model
                   </div>
                   <div style={{
                     fontSize: '0.875rem',
-                    fontWeight: '500'
+                    fontWeight: '500',
+                    color: 'var(--text-primary)'
                   }}>
                     {session.model_name || 'Unknown'}
                   </div>
@@ -124,29 +135,33 @@ export function SessionOverview() {
                 <div>
                   <div style={{
                     fontSize: '0.75rem',
-                    color: '#6b7280',
-                    marginBottom: '0.125rem'
+                    color: 'var(--text-secondary)',
+                    marginBottom: '0.25rem'
                   }}>
-                    Event Count
+                    Events
                   </div>
                   <div style={{
                     fontSize: '0.875rem',
-                    fontWeight: '500'
+                    fontWeight: '500',
+                    color: 'var(--accent-green)'
                   }}>
                     {session.event_count}
                   </div>
                 </div>
               </div>
 
-              <div style={{ marginTop: '0.5rem' }}>
+              <div style={{ marginTop: '1rem', paddingTop: '1rem', borderTop: '1px solid var(--border-color)' }}>
                 <div style={{
                   fontSize: '0.75rem',
-                  color: '#6b7280',
-                  marginBottom: '0.125rem'
+                  color: 'var(--text-secondary)',
+                  marginBottom: '0.25rem'
                 }}>
                   Last Activity
                 </div>
-                <div style={{ fontSize: '0.875rem' }}>
+                <div style={{
+                  fontSize: '0.875rem',
+                  color: 'var(--text-primary)'
+                }}>
                   {formatTimestamp(session.last_activity)}
                 </div>
               </div>

@@ -5,11 +5,8 @@ export default defineConfig({
   plugins: [react()],
   server: {
     host: '0.0.0.0', // Bind to all interfaces for WSL access from Windows
-    port: 5173,
-    proxy: {
-      '/api': { target: 'http://localhost:8000', changeOrigin: true },
-      '/events': { target: 'http://localhost:8000', changeOrigin: true },
-      '/stream': { target: 'http://localhost:8000', changeOrigin: true }
-    }
+    port: 5173
+    // No proxy needed - frontend connects directly to backend at http://localhost:8000
+    // CORS is configured on the backend to allow localhost:5173
   }
 })

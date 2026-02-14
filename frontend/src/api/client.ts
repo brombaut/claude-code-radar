@@ -1,6 +1,5 @@
-// Use empty string to make requests relative to the Vite dev server
-// Vite proxy will forward to the backend
-const API_BASE_URL = ''
+// Connect directly to backend - CORS is configured on backend
+const API_BASE_URL = 'http://localhost:8000'
 
 export interface Session {
   session_id: string
