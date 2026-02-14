@@ -3,9 +3,10 @@ import { useEventStream } from './hooks/useEventStream'
 import { EventStream } from './components/EventStream'
 import { SessionSidebar } from './components/SessionSidebar'
 import { ToolAnalytics } from './components/ToolAnalytics'
+import { Timeline } from './components/Timeline'
 
 function App() {
-  const [timeframeHours, setTimeframeHours] = useState(1)
+  const [timeframeHours, setTimeframeHours] = useState(5 / 60) // 5 minutes default
   const [selectedFilter, setSelectedFilter] = useState<{
     type: 'all' | 'project' | 'session'
     value: string
@@ -122,13 +123,11 @@ function App() {
                 cursor: 'pointer'
               }}
             >
-              <option value={0.25}>Last 15 min</option>
-              <option value={0.5}>Last 30 min</option>
-              <option value={1}>Last hour</option>
-              <option value={3}>Last 3 hours</option>
-              <option value={6}>Last 6 hours</option>
-              <option value={12}>Last 12 hours</option>
-              <option value={24}>Last 24 hours</option>
+              <option value={1 / 60}>Last 1 min</option>
+              <option value={3 / 60}>Last 3 min</option>
+              <option value={5 / 60}>Last 5 min</option>
+              <option value={10 / 60}>Last 10 min</option>
+              <option value={15 / 60}>Last 15 min</option>
             </select>
           </label>
         </div>
@@ -171,6 +170,18 @@ function App() {
                   timeframeHours={timeframeHours}
                   sessionIds={selectedSessionIds}
                 />
+              </div>
+
+              <div style={{ marginBottom: '2rem' }}>
+                <h2 style={{
+                  margin: '0 0 1rem 0',
+                  fontSize: '1.125rem',
+                  fontWeight: '600',
+                  color: 'var(--text-primary)'
+                }}>
+                  Timeline
+                </h2>
+                <Timeline events={filteredEvents} timeframeHours={timeframeHours} />
               </div>
 
               <div style={{ minHeight: '400px' }}>
