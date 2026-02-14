@@ -28,6 +28,7 @@ The hooks capture these Claude Code events:
 - `SubagentStop` - Subagent termination
 - `PreCompact` - Context window compaction
 - `Stop` - Session interruptions
+- `AssistantMessage` - Claude's text responses (extracted from transcript)
 
 ## Log Files
 
@@ -64,6 +65,25 @@ The `pre_tool_use.py` hook blocks dangerous commands:
 `user_prompt_submit.py` stores:
 - User prompts in `.claude/data/sessions/{session_id}.json`
 - Optional AI-generated agent names for sessions (when `--name-agent` flag is used)
+
+## Assistant Message Extraction
+
+Claude's text responses are automatically extracted from the transcript by two hooks:
+
+**`post_tool_use.py`** - Captures messages during tool execution:
+- Runs after each tool completes
+- Extracts assistant messages that appear after the tool
+
+**`stop.py`** - Captures final messages:
+- Runs when Claude completes its turn
+- Ensures text-only responses (no tools) are captured
+- Catches the final message in every turn
+
+Both hooks:
+- Read the session transcript file (`.jsonl` format)
+- Extract new assistant text messages since last check
+- Send each message as an `AssistantMessage` event to the backend
+- Share state in `logs/{session_id}/assistant_messages_state.json` to prevent duplicates
 
 ## Status Line
 
@@ -102,11 +122,11 @@ Core dependencies:
 │   ├── session_end.py         # Logs session ends
 │   ├── user_prompt_submit.py  # Logs user prompts, manages session data
 │   ├── pre_tool_use.py        # Validates and logs tool calls
-│   ├── post_tool_use.py       # Logs tool completions
+│   ├── post_tool_use.py       # Logs tool completions, extracts assistant messages
 │   ├── send_event.py          # Sends events to HTTP server
 │   ├── notification.py        # Logs notifications
 │   ├── permission_request.py  # Logs permission requests
-│   ├── stop.py                # Logs session stops
+│   ├── stop.py                # Logs session stops, extracts final assistant messages
 │   ├── subagent_start.py      # Logs subagent starts
 │   ├── subagent_stop.py       # Logs subagent stops
 │   ├── pre_compact.py         # Logs context compaction
@@ -115,6 +135,7 @@ Core dependencies:
 │       ├── constants.py       # Log directory constants
 │       ├── summarizer.py      # Event summarization
 │       ├── model_extractor.py # Extract model from transcript
+│       ├── assistant_extractor.py # Extract assistant messages from transcript
 │       ├── hitl.py            # Human-in-the-loop utilities
 │       ├── llm/               # LLM API helpers (anth.py, oai.py)
 │       └── tts/               # Text-to-speech (pyttsx3, openai, elevenlabs)

@@ -11,10 +11,10 @@
 Multi-Agent Observability Hook Script
 Sends Claude Code hook events to the observability server.
 
-Supported event types (12 total):
+Supported event types (13 total):
   SessionStart, SessionEnd, UserPromptSubmit, PreToolUse, PostToolUse,
   PostToolUseFailure, PermissionRequest, Notification, SubagentStart,
-  SubagentStop, Stop, PreCompact
+  SubagentStop, Stop, PreCompact, AssistantMessage
 """
 
 import json
@@ -142,6 +142,14 @@ def main():
     # reason: SessionEnd
     if 'reason' in input_data:
         event_data['reason'] = input_data['reason']
+
+    # assistant_message: AssistantMessage
+    if 'assistant_message' in input_data:
+        assistant_msg = input_data['assistant_message']
+        event_data['assistant_message'] = assistant_msg
+        # Also set model_name from assistant message if not already set
+        if not model_name and assistant_msg.get('model'):
+            event_data['model_name'] = assistant_msg['model']
     
     # Handle --add-chat option
     if args.add_chat and 'transcript_path' in input_data:

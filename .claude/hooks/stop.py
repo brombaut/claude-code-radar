@@ -15,6 +15,11 @@ import subprocess
 from pathlib import Path
 from datetime import datetime
 from utils.constants import ensure_session_log_dir
+from utils.assistant_extractor import (
+    get_assistant_messages,
+    get_last_processed_uuid,
+    update_last_processed_uuid
+)
 
 try:
     from dotenv import load_dotenv
@@ -214,6 +219,60 @@ def main():
         if args.notify:
             # Announce completion via TTS
             announce_completion()
+
+        # Extract and send any remaining assistant messages from transcript
+        # This catches final messages that don't trigger tool use
+        transcript_path = input_data.get('transcript_path')
+        if transcript_path:
+            try:
+                # Get last processed message UUID
+                last_uuid = get_last_processed_uuid(log_dir)
+
+                # Extract new assistant messages
+                new_messages = get_assistant_messages(transcript_path, last_uuid)
+
+                # Send each new message to backend
+                if new_messages:
+                    script_dir = Path(__file__).parent
+                    send_event_script = script_dir / 'send_event.py'
+
+                    for msg in new_messages:
+                        # Prepare event data for assistant message
+                        event_payload = {
+                            'session_id': session_id,
+                            'transcript_path': transcript_path,
+                            'hook_event_name': 'AssistantMessage',
+                            'assistant_message': {
+                                'uuid': msg['uuid'],
+                                'timestamp': msg['timestamp'],
+                                'text': msg['text'],
+                                'model': msg['model'],
+                                'message_id': msg['message_id']
+                            }
+                        }
+
+                        # Send to backend via send_event.py
+                        try:
+                            result = subprocess.run(
+                                [
+                                    'uv', 'run', str(send_event_script),
+                                    '--source-app', 'claude-code-observability',
+                                    '--event-type', 'AssistantMessage'
+                                ],
+                                input=json.dumps(event_payload),
+                                capture_output=True,
+                                text=True,
+                                timeout=2
+                            )
+                        except Exception:
+                            pass
+
+                    # Update last processed UUID
+                    if new_messages:
+                        update_last_processed_uuid(log_dir, new_messages[-1]['uuid'])
+
+            except Exception:
+                pass
 
         sys.exit(0)
 
