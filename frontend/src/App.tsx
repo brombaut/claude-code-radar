@@ -1,6 +1,7 @@
 import { useEventStream } from './hooks/useEventStream'
 import { EventStream } from './components/EventStream'
 import { SessionOverview } from './components/SessionOverview'
+import { ToolAnalytics } from './components/ToolAnalytics'
 
 function App() {
   const { events, connected } = useEventStream()
@@ -28,6 +29,10 @@ function App() {
 
       <div style={{ marginBottom: '2rem' }}>
         <SessionOverview />
+      </div>
+
+      <div style={{ marginBottom: '2rem' }}>
+        <ToolAnalytics />
       </div>
 
       <div style={{ flex: 1, minHeight: 0 }}>
