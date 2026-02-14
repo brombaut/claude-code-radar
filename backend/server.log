@@ -49,3 +49,4 @@ INFO:     127.0.0.1:36996 - "GET /stream HTTP/1.1" 200 OK
 INFO:     127.0.0.1:54834 - "POST /events HTTP/1.1" 200 OK
 INFO:     127.0.0.1:59318 - "GET /stream HTTP/1.1" 200 OK
 INFO:     127.0.0.1:59332 - "POST /events HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57730 - "GET /api/tools/stats?hours=1 HTTP/1.1" 200 OK

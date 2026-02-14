@@ -3222,5 +3222,82 @@
       "command": "git add -A && git status",
       "description": "Stage all changes and check status"
     }
+  },
+  {
+    "tool_name": "Bash",
+    "tool_use_id": "toolu_01MAhbPNEqRMjf5QHcs3Xy9j",
+    "session_id": "30ce6fc8-632a-45fd-8429-cec8b657956a",
+    "hook_event_name": "PreToolUse",
+    "tool_summary": {
+      "tool_name": "Bash",
+      "command": "git commit -m \"feat: add ToolAnalytics component with success rates\"",
+      "description": "Commit the ToolAnalytics implementation"
+    }
+  },
+  {
+    "tool_name": "Bash",
+    "tool_use_id": "toolu_01Gv4tuV31hPbaESDXnMunvM",
+    "session_id": "30ce6fc8-632a-45fd-8429-cec8b657956a",
+    "hook_event_name": "PreToolUse",
+    "tool_summary": {
+      "tool_name": "Bash",
+      "command": "curl -s http://localhost:5173/ | head -20",
+      "description": "Check if frontend dev server is running"
+    }
+  },
+  {
+    "tool_name": "Bash",
+    "tool_use_id": "toolu_01Mz8FTMouxFQbmvH9N16eJq",
+    "session_id": "30ce6fc8-632a-45fd-8429-cec8b657956a",
+    "hook_event_name": "PreToolUse",
+    "tool_summary": {
+      "tool_name": "Bash",
+      "command": "curl -s http://localhost:8000/api/tools/stats?hours=1",
+      "description": "Test the tool stats API endpoint"
+    }
+  },
+  {
+    "tool_name": "Bash",
+    "tool_use_id": "toolu_013BgAcL2b3BgkBjVbmvZr3B",
+    "session_id": "30ce6fc8-632a-45fd-8429-cec8b657956a",
+    "hook_event_name": "PreToolUse",
+    "tool_summary": {
+      "tool_name": "Bash",
+      "command": "ls -la /home/ben/work_personal/claude_code_observability/frontend/src/components/",
+      "description": "List all components to verify ToolAnalytics was created"
+    }
+  },
+  {
+    "tool_name": "Bash",
+    "tool_use_id": "toolu_01UfyL8rjBx2jjRD5bbnKnvr",
+    "session_id": "30ce6fc8-632a-45fd-8429-cec8b657956a",
+    "hook_event_name": "PreToolUse",
+    "tool_summary": {
+      "tool_name": "Bash",
+      "command": "grep -n \"fetchToolStats\" /home/ben/work_personal/claude_code_observability/frontend/src/api/client.ts",
+      "description": "Verify fetchToolStats export exists"
+    }
+  },
+  {
+    "tool_name": "Edit",
+    "tool_use_id": "toolu_015925SMZAtPzDXBf3XddP3V",
+    "session_id": "30ce6fc8-632a-45fd-8429-cec8b657956a",
+    "hook_event_name": "PreToolUse",
+    "tool_summary": {
+      "tool_name": "Edit",
+      "file_path": "/home/ben/work_personal/claude_code_observability/frontend/src/api/client.ts",
+      "replace_all": false
+    }
+  },
+  {
+    "tool_name": "Bash",
+    "tool_use_id": "toolu_01M7P5E4SXQsnocZzN3NFbQp",
+    "session_id": "30ce6fc8-632a-45fd-8429-cec8b657956a",
+    "hook_event_name": "PreToolUse",
+    "tool_summary": {
+      "tool_name": "Bash",
+      "command": "git add -A && git commit -m \"fix: rename getToolStats to fetchToolStats for consistency\"",
+      "description": "Commit the function name fix"
+    }
   }
 ]

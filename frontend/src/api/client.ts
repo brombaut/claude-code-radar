@@ -52,7 +52,7 @@ export async function getEvents(
   return response.json()
 }
 
-export async function getToolStats(hours: number = 1): Promise<ToolStats> {
+export async function fetchToolStats(hours: number = 1): Promise<ToolStats> {
   const response = await fetch(`${API_BASE_URL}/api/tools/stats?hours=${hours}`)
   if (!response.ok) {
     throw new Error(`Failed to fetch tool stats: ${response.statusText}`)
