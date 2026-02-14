@@ -15,7 +15,7 @@ class HITLRequest:
         hitl_type: Literal['question', 'permission', 'choice'] = 'question',
         choices: Optional[list[str]] = None,
         timeout: int = 300,  # 5 minutes default
-        observability_url: str = "http://localhost:4000"
+        observability_url: str = "http://localhost:8000"
     ):
         self.question = question
         self.hitl_type = hitl_type
