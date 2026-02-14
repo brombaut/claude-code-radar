@@ -1,6 +1,6 @@
 # Claude Code Radar (CCR)
 
-*"Have you ever seen the code rain?"* 🎵
+*"I see a bad moon rising, I see trouble on the way"* 🎵
 
 Real-time monitoring and logging hooks for Claude Code sessions.
 
