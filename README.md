@@ -7,7 +7,7 @@ Logging and monitoring hooks for Claude Code sessions.
 This project implements Claude Code hooks that:
 
 1. **Log events to JSON files** in the `logs/` directory
-2. **Send events to an HTTP server** at `http://localhost:4000/events`
+2. **Send events to an HTTP server** at `http://localhost:8000/events`
 3. **Display a custom status line** showing context window usage
 
 ## Logged Events
@@ -48,7 +48,7 @@ The `send_event.py` hook sends events to an HTTP server with:
 - Optional AI-generated event summaries (when `--summarize` flag is used)
 - Optional chat transcript (when `--add-chat` flag is used)
 
-Default server: `http://localhost:4000/events`
+Default server: `http://localhost:8000/events`
 
 ## Tool Call Validation
 
@@ -137,7 +137,7 @@ The observability dashboard provides real-time monitoring and analysis of Claude
 
 1. Navigate to the backend directory:
 ```bash
-cd dashboard/backend
+cd backend
 ```
 
 2. Create a virtual environment (optional but recommended):
@@ -153,16 +153,16 @@ pip install -r requirements.txt
 
 4. Start the backend server:
 ```bash
-python server.py
+uvicorn main:app --reload
 ```
 
-The backend server will start on `http://localhost:4000`
+The backend server will start on `http://localhost:8000`
 
 ### Frontend Setup
 
 1. In a new terminal, navigate to the frontend directory:
 ```bash
-cd dashboard/frontend
+cd frontend
 ```
 
 2. Install dependencies:
@@ -187,7 +187,7 @@ Test the event processing and dashboard views:
 
 ```bash
 # From the project root
-python dashboard/backend/test_events.py
+python backend/test_events.py
 ```
 
 This will:
@@ -197,8 +197,8 @@ This will:
 
 ### Usage Guide
 
-1. **Start both servers**: Backend on port 4000, frontend on port 5173
-2. **Configure Claude Code**: Ensure `.claude/settings.json` has hooks configured to send events to `http://localhost:4000/events`
+1. **Start both servers**: Backend on port 8000, frontend on port 5173
+2. **Configure Claude Code**: Ensure `.claude/settings.json` has hooks configured to send events to `http://localhost:8000/events`
 3. **Start a Claude Code session**: Events will automatically flow to the dashboard
 4. **Monitor in real-time**: Open `http://localhost:5173` to see live session data
 
@@ -236,4 +236,4 @@ The backend provides these REST endpoints:
 - `GET /api/sessions/{session_id}` - Get session details
 - `GET /api/events` - Query events with filtering
 - `GET /api/stats` - Get aggregate statistics
-- `WebSocket /ws` - Real-time event stream
+- `GET /stream` - Server-Sent Events (SSE) for real-time event stream

@@ -50,3 +50,80 @@ INFO:     127.0.0.1:54834 - "POST /events HTTP/1.1" 200 OK
 INFO:     127.0.0.1:59318 - "GET /stream HTTP/1.1" 200 OK
 INFO:     127.0.0.1:59332 - "POST /events HTTP/1.1" 200 OK
 INFO:     127.0.0.1:57730 - "GET /api/tools/stats?hours=1 HTTP/1.1" 200 OK
+WARNING:  WatchFiles detected changes in 'test_events.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [13959]
+INFO:     Started server process [42122]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     127.0.0.1:45430 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45444 - "POST /events HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45450 - "POST /events HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45454 - "POST /events HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45456 - "POST /events HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45462 - "POST /events HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45466 - "POST /events HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45470 - "POST /events HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45482 - "POST /events HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45488 - "POST /events HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45500 - "POST /events HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45512 - "POST /events HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45524 - "POST /events HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45534 - "POST /events HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45546 - "POST /events HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45548 - "POST /events HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45562 - "POST /events HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45564 - "POST /events HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45570 - "POST /events HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50104 - "POST /events HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50116 - "POST /events HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50130 - "POST /events HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50144 - "POST /events HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50152 - "POST /events HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50166 - "POST /events HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50168 - "POST /events HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50178 - "POST /events HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50188 - "POST /events HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50194 - "POST /events HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50208 - "POST /events HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50218 - "POST /events HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50234 - "GET /api/events?limit=10 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40734 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56430 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56432 - "POST /events HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56434 - "POST /events HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56440 - "POST /events HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56456 - "POST /events HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56468 - "POST /events HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56476 - "POST /events HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56490 - "POST /events HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56494 - "POST /events HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56506 - "POST /events HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56516 - "POST /events HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56524 - "POST /events HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56526 - "POST /events HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56536 - "POST /events HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56552 - "POST /events HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56568 - "POST /events HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48896 - "POST /events HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48902 - "POST /events HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48906 - "POST /events HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48920 - "POST /events HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48926 - "POST /events HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48934 - "POST /events HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48940 - "POST /events HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48950 - "POST /events HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48964 - "POST /events HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48966 - "POST /events HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48980 - "POST /events HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48990 - "POST /events HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48992 - "POST /events HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48998 - "POST /events HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49002 - "POST /events HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49014 - "POST /events HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49030 - "POST /events HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49032 - "POST /events HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49038 - "GET /api/events?limit=10 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51198 - "GET /stream HTTP/1.1" 200 OK

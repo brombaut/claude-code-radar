@@ -190,5 +190,29 @@
     "hook_event_name": "SubagentStart",
     "agent_id": "af7fa1d",
     "agent_type": "builder"
+  },
+  {
+    "session_id": "30ce6fc8-632a-45fd-8429-cec8b657956a",
+    "transcript_path": "/home/ben/.claude/projects/-home-ben-work-personal-claude-code-observability/30ce6fc8-632a-45fd-8429-cec8b657956a.jsonl",
+    "cwd": "/home/ben/work_personal/claude_code_observability",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "acb6551",
+    "agent_type": "builder"
+  },
+  {
+    "session_id": "30ce6fc8-632a-45fd-8429-cec8b657956a",
+    "transcript_path": "/home/ben/.claude/projects/-home-ben-work-personal-claude-code-observability/30ce6fc8-632a-45fd-8429-cec8b657956a.jsonl",
+    "cwd": "/home/ben/work_personal/claude_code_observability",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "a991dd9",
+    "agent_type": "builder"
+  },
+  {
+    "session_id": "30ce6fc8-632a-45fd-8429-cec8b657956a",
+    "transcript_path": "/home/ben/.claude/projects/-home-ben-work-personal-claude-code-observability/30ce6fc8-632a-45fd-8429-cec8b657956a.jsonl",
+    "cwd": "/home/ben/work_personal/claude_code_observability",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "a08cd39",
+    "agent_type": "builder"
   }
 ]
