@@ -1,6 +1,0 @@
-{
-  "session_id": "fa9d87b5-f957-43fd-b055-525d49a3d502",
-  "prompts": [
-    "When I run  ./scripts/start-system.sh it says ============================================\n\u2705 Multi-Agent Observability System Started\n============================================\n\n\ud83d\udda5\ufe0f  Client URL: http://localhost:5173\n\ud83d\udd0c Server API: http://localhost:4000\n\ud83d\udce1 WebSocket: ws://localhost:4000/stream\n\nBut when I try to load the localhost url on chrome, it says it cant be reached. I am trying to run this from wsl, is that affecting something?"
-  ]
-}
