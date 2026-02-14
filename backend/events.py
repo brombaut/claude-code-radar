@@ -94,7 +94,7 @@ def get_active_sessions(minutes: int = 60) -> list[dict]:
 
         return sessions
 
-def get_tool_stats(hours: int = 1) -> dict:
+def get_tool_stats(hours: float = 1) -> dict:
     """Get tool usage statistics for last N hours."""
     with get_db() as conn:
         cutoff = int((time.time() - hours * 3600) * 1000)

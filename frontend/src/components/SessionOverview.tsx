@@ -1,7 +1,11 @@
 import { useEffect, useState } from 'react'
 import { getActiveSessions, type Session } from '../api/client'
 
-export function SessionOverview() {
+interface SessionOverviewProps {
+  timeframeHours?: number
+}
+
+export function SessionOverview({ timeframeHours = 1 }: SessionOverviewProps) {
   const [sessions, setSessions] = useState<Session[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -9,7 +13,8 @@ export function SessionOverview() {
 
   const fetchSessions = async () => {
     try {
-      const response = await getActiveSessions(60)
+      const minutes = Math.ceil(timeframeHours * 60)
+      const response = await getActiveSessions(minutes)
       setSessions(response.sessions)
       setError(null)
     } catch (err) {
@@ -23,7 +28,7 @@ export function SessionOverview() {
     fetchSessions()
     const interval = setInterval(fetchSessions, refreshInterval)
     return () => clearInterval(interval)
-  }, [refreshInterval])
+  }, [refreshInterval, timeframeHours])
 
   const formatTimestamp = (timestamp: number) => {
     const date = new Date(timestamp)
@@ -69,7 +74,7 @@ export function SessionOverview() {
           border: '1px solid var(--border-color)',
           color: 'var(--text-secondary)'
         }}>
-          No active sessions in the last 60 minutes
+          No active sessions in the selected timeframe
         </div>
       ) : (
         <div style={{

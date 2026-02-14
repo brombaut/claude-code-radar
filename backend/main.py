@@ -95,7 +95,7 @@ def active_sessions(minutes: int = 60):
     return {"sessions": sessions, "count": len(sessions)}
 
 @app.get("/api/tools/stats")
-def tool_statistics(hours: int = 1):
+def tool_statistics(hours: float = 1):
     """Get tool usage statistics."""
     stats = get_tool_stats(hours=hours)
     return stats

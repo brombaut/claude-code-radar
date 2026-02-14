@@ -102,11 +102,11 @@ function App() {
         ) : (
           <>
             <div style={{ marginBottom: '2rem' }}>
-              <SessionOverview />
+              <SessionOverview timeframeHours={timeframeHours} />
             </div>
 
             <div style={{ marginBottom: '2rem' }}>
-              <ToolAnalytics />
+              <ToolAnalytics timeframeHours={timeframeHours} />
             </div>
 
             <div style={{ minHeight: '400px' }}>

@@ -1,18 +1,12 @@
 import { useState, useEffect } from 'react'
 import { type ToolStats, fetchToolStats } from '../api/client'
 
-const TIME_RANGES = [
-  { label: 'Last 15 min', hours: 0.25 },
-  { label: 'Last 30 min', hours: 0.5 },
-  { label: 'Last 1 hour', hours: 1 },
-  { label: 'Last 3 hours', hours: 3 },
-  { label: 'Last 6 hours', hours: 6 },
-  { label: 'Last 24 hours', hours: 24 }
-]
+interface ToolAnalyticsProps {
+  timeframeHours?: number
+}
 
-export function ToolAnalytics() {
+export function ToolAnalytics({ timeframeHours = 1 }: ToolAnalyticsProps) {
   const [stats, setStats] = useState<ToolStats | null>(null)
-  const [selectedRange, setSelectedRange] = useState(1)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -20,13 +14,13 @@ export function ToolAnalytics() {
     loadStats()
     const interval = setInterval(loadStats, 30000)
     return () => clearInterval(interval)
-  }, [selectedRange])
+  }, [timeframeHours])
 
   async function loadStats() {
     try {
       setLoading(true)
       setError(null)
-      const data = await fetchToolStats(selectedRange)
+      const data = await fetchToolStats(timeframeHours)
       setStats(data)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to fetch tool stats')
@@ -49,9 +43,6 @@ export function ToolAnalytics() {
       border: '1px solid var(--border-color)'
     }}>
       <div style={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
         marginBottom: '1.5rem'
       }}>
         <h3 style={{
@@ -60,25 +51,6 @@ export function ToolAnalytics() {
         }}>
           Tool Analytics
         </h3>
-        <select
-          value={selectedRange}
-          onChange={(e) => setSelectedRange(Number(e.target.value))}
-          style={{
-            padding: '0.5rem 0.75rem',
-            border: '1px solid var(--border-color)',
-            borderRadius: '6px',
-            fontSize: '0.875rem',
-            backgroundColor: 'var(--bg-tertiary)',
-            color: 'var(--text-primary)',
-            cursor: 'pointer'
-          }}
-        >
-          {TIME_RANGES.map(range => (
-            <option key={range.hours} value={range.hours}>
-              {range.label}
-            </option>
-          ))}
-        </select>
       </div>
 
       {loading && !stats && (
