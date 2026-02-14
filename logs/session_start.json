@@ -5,5 +5,12 @@
     "source": "startup",
     "model": "claude-sonnet-4-5-20250929",
     "agent_type": ""
+  },
+  {
+    "session_id": "45f0b2e8-b445-4e3f-8b63-8a75e140d74b",
+    "hook_event_name": "SessionStart",
+    "source": "startup",
+    "model": "claude-sonnet-4-5-20250929",
+    "agent_type": ""
   }
 ]

@@ -382,5 +382,29 @@
     "agent_id": "a3efe92",
     "agent_type": "",
     "agent_transcript_path": "/home/ben/.claude/projects/-home-ben-work-personal-claude-code-observability/30ce6fc8-632a-45fd-8429-cec8b657956a/subagents/agent-a3efe92.jsonl"
+  },
+  {
+    "session_id": "30ce6fc8-632a-45fd-8429-cec8b657956a",
+    "hook_event_name": "SubagentStop",
+    "stop_hook_active": false,
+    "agent_id": "affcce3",
+    "agent_type": "",
+    "agent_transcript_path": "/home/ben/.claude/projects/-home-ben-work-personal-claude-code-observability/30ce6fc8-632a-45fd-8429-cec8b657956a/subagents/agent-affcce3.jsonl"
+  },
+  {
+    "session_id": "30ce6fc8-632a-45fd-8429-cec8b657956a",
+    "hook_event_name": "SubagentStop",
+    "stop_hook_active": false,
+    "agent_id": "a93f07c",
+    "agent_type": "",
+    "agent_transcript_path": "/home/ben/.claude/projects/-home-ben-work-personal-claude-code-observability/30ce6fc8-632a-45fd-8429-cec8b657956a/subagents/agent-a93f07c.jsonl"
+  },
+  {
+    "session_id": "30ce6fc8-632a-45fd-8429-cec8b657956a",
+    "hook_event_name": "SubagentStop",
+    "stop_hook_active": false,
+    "agent_id": "a941d06",
+    "agent_type": "",
+    "agent_transcript_path": "/home/ben/.claude/projects/-home-ben-work-personal-claude-code-observability/30ce6fc8-632a-45fd-8429-cec8b657956a/subagents/agent-a941d06.jsonl"
   }
 ]

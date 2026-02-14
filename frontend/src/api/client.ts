@@ -1,4 +1,6 @@
-const API_BASE_URL = 'http://localhost:8000'
+// Use empty string to make requests relative to the Vite dev server
+// Vite proxy will forward to the backend
+const API_BASE_URL = ''
 
 export interface Session {
   session_id: string

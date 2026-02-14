@@ -1,0 +1,72 @@
+[
+  {
+    "tool_name": "Glob",
+    "tool_use_id": "toolu_01JMmQravwKVDzKWr4HvxcPL",
+    "session_id": "45f0b2e8-b445-4e3f-8b63-8a75e140d74b",
+    "hook_event_name": "PostToolUse",
+    "is_mcp_tool": false
+  },
+  {
+    "tool_name": "Bash",
+    "tool_use_id": "toolu_01Bwyo2fshYNyj11NUFz3SP3",
+    "session_id": "45f0b2e8-b445-4e3f-8b63-8a75e140d74b",
+    "hook_event_name": "PostToolUse",
+    "is_mcp_tool": false
+  },
+  {
+    "tool_name": "Bash",
+    "tool_use_id": "toolu_01LNQikhnVhNxzf3PqXczRVt",
+    "session_id": "45f0b2e8-b445-4e3f-8b63-8a75e140d74b",
+    "hook_event_name": "PostToolUse",
+    "is_mcp_tool": false
+  },
+  {
+    "tool_name": "Glob",
+    "tool_use_id": "toolu_01XVgsjm85vSEfCd6wtMzUcp",
+    "session_id": "45f0b2e8-b445-4e3f-8b63-8a75e140d74b",
+    "hook_event_name": "PostToolUse",
+    "is_mcp_tool": false
+  },
+  {
+    "tool_name": "Read",
+    "tool_use_id": "toolu_01VfNjNFe4sKixpfkX87QG8V",
+    "session_id": "45f0b2e8-b445-4e3f-8b63-8a75e140d74b",
+    "hook_event_name": "PostToolUse",
+    "is_mcp_tool": false
+  },
+  {
+    "tool_name": "Bash",
+    "tool_use_id": "toolu_01XLBQCiiYMG6V6BiXktgc5B",
+    "session_id": "45f0b2e8-b445-4e3f-8b63-8a75e140d74b",
+    "hook_event_name": "PostToolUse",
+    "is_mcp_tool": false
+  },
+  {
+    "tool_name": "Read",
+    "tool_use_id": "toolu_01LSXXFn9oHKhtVUbYny36si",
+    "session_id": "45f0b2e8-b445-4e3f-8b63-8a75e140d74b",
+    "hook_event_name": "PostToolUse",
+    "is_mcp_tool": false
+  },
+  {
+    "tool_name": "Read",
+    "tool_use_id": "toolu_01GRfuJT7zBBd8yrS9BRS6pW",
+    "session_id": "45f0b2e8-b445-4e3f-8b63-8a75e140d74b",
+    "hook_event_name": "PostToolUse",
+    "is_mcp_tool": false
+  },
+  {
+    "tool_name": "Bash",
+    "tool_use_id": "toolu_016coRpiStpeYiSTdvUKEoyf",
+    "session_id": "45f0b2e8-b445-4e3f-8b63-8a75e140d74b",
+    "hook_event_name": "PostToolUse",
+    "is_mcp_tool": false
+  },
+  {
+    "tool_name": "Write",
+    "tool_use_id": "toolu_01EWSczRbi96KhyvzvT2vs6o",
+    "session_id": "45f0b2e8-b445-4e3f-8b63-8a75e140d74b",
+    "hook_event_name": "PostToolUse",
+    "is_mcp_tool": false
+  }
+]

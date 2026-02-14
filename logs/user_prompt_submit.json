@@ -182,5 +182,37 @@
     "permission_mode": "acceptEdits",
     "hook_event_name": "UserPromptSubmit",
     "prompt": "Thanks, now can you rename this project to be Claude Code Radar (notice that the acronym for this is CCR, so in the readme, can you make a funny reference to a song from the band CCR Credence Clearwater Revival, maybe \"I see trouble on the way\" or some funny word play on \"Have you ever seen the rain\"?)"
+  },
+  {
+    "session_id": "30ce6fc8-632a-45fd-8429-cec8b657956a",
+    "transcript_path": "/home/ben/.claude/projects/-home-ben-work-personal-claude-code-observability/30ce6fc8-632a-45fd-8429-cec8b657956a.jsonl",
+    "cwd": "/home/ben/work_personal/claude_code_observability",
+    "permission_mode": "acceptEdits",
+    "hook_event_name": "UserPromptSubmit",
+    "prompt": "Can you actually use \"I see a bad moon rising, I see trouble on the way\""
+  },
+  {
+    "session_id": "30ce6fc8-632a-45fd-8429-cec8b657956a",
+    "transcript_path": "/home/ben/.claude/projects/-home-ben-work-personal-claude-code-observability/30ce6fc8-632a-45fd-8429-cec8b657956a.jsonl",
+    "cwd": "/home/ben/work_personal/claude_code_observability",
+    "permission_mode": "acceptEdits",
+    "hook_event_name": "UserPromptSubmit",
+    "prompt": "When I try to load the frontend, I see this Uncaught SyntaxError: The requested module '/src/api/client.ts' does not provide an export named 'ToolStats' (at ToolAnalytics.tsx:2:10)"
+  },
+  {
+    "session_id": "45f0b2e8-b445-4e3f-8b63-8a75e140d74b",
+    "transcript_path": "/home/ben/.claude/projects/-home-ben-work-personal-claude-code-observability/45f0b2e8-b445-4e3f-8b63-8a75e140d74b.jsonl",
+    "cwd": "/home/ben/work_personal/claude_code_observability",
+    "permission_mode": "default",
+    "hook_event_name": "UserPromptSubmit",
+    "prompt": "Can you create a CLAUDE.md file for this repo?"
+  },
+  {
+    "session_id": "30ce6fc8-632a-45fd-8429-cec8b657956a",
+    "transcript_path": "/home/ben/.claude/projects/-home-ben-work-personal-claude-code-observability/30ce6fc8-632a-45fd-8429-cec8b657956a.jsonl",
+    "cwd": "/home/ben/work_personal/claude_code_observability",
+    "permission_mode": "acceptEdits",
+    "hook_event_name": "UserPromptSubmit",
+    "prompt": "It still doesnt seem to be working, I should note that Im running this server on wsl, and trying to view it on chrome on my windows"
   }
 ]

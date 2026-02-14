@@ -1,0 +1,10 @@
+[
+  {
+    "session_id": "45f0b2e8-b445-4e3f-8b63-8a75e140d74b",
+    "hook_event_name": "SubagentStop",
+    "stop_hook_active": false,
+    "agent_id": "ab64a1d",
+    "agent_type": "",
+    "agent_transcript_path": "/home/ben/.claude/projects/-home-ben-work-personal-claude-code-observability/45f0b2e8-b445-4e3f-8b63-8a75e140d74b/subagents/agent-ab64a1d.jsonl"
+  }
+]
