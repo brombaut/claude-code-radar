@@ -6,7 +6,35 @@ interface EventStreamProps {
   maxEvents?: number
 }
 
+const EVENT_EMOJIS: Record<string, string> = {
+  // Session lifecycle
+  'SessionStart': '🚀',
+  'SessionEnd': '🛑',
+  'Stop': '⏸️',
+
+  // User interaction
+  'UserPromptSubmit': '💬',
+  'AssistantMessage': '🤖',
+
+  // Tool execution
+  'PreToolUse': '🔧',
+  'PostToolUse': '✅',
+  'PostToolUseFailure': '❌',
+
+  // Permissions & notifications
+  'PermissionRequest': '🔐',
+  'Notification': '🔔',
+
+  // Subagents
+  'SubagentStart': '🌱',
+  'SubagentStop': '🔚',
+
+  // System events
+  'PreCompact': '🗜️',
+}
+
 const EVENT_COLORS: Record<string, string> = {
+  // Legacy event types
   'model_request': '#58a6ff',
   'model_response': '#3fb950',
   'tool_invocation': '#f0883e',
@@ -14,11 +42,31 @@ const EVENT_COLORS: Record<string, string> = {
   'error': '#f85149',
   'session_start': '#768390',
   'session_end': '#768390',
-  'PreToolUse': '#58a6ff',
-  'PostToolUse': '#3fb950',
-  'PostToolUseFailure': '#f85149',
-  'SessionStart': '#768390',
-  'UserPromptSubmit': '#bc8cff',
+
+  // Session lifecycle
+  'SessionStart': '#768390',      // Gray
+  'SessionEnd': '#768390',        // Gray
+  'Stop': '#ff9500',              // Bright orange (noticeable!)
+
+  // User interaction
+  'UserPromptSubmit': '#bc8cff',  // Purple
+  'AssistantMessage': '#26d0ce',  // Bright teal (distinct from user purple)
+
+  // Tool execution
+  'PreToolUse': '#58a6ff',        // Blue
+  'PostToolUse': '#3fb950',       // Green
+  'PostToolUseFailure': '#f85149', // Red
+
+  // Permissions & notifications
+  'PermissionRequest': '#f0883e', // Orange
+  'Notification': '#00d9ff',      // Bright cyan (noticeable!)
+
+  // Subagents
+  'SubagentStart': '#39d353',     // Bright green
+  'SubagentStop': '#2ea043',      // Dark green
+
+  // System events
+  'PreCompact': '#d29922',        // Yellow/gold (warning)
 }
 
 export function EventStream({ events, maxEvents = 100 }: EventStreamProps) {
@@ -41,11 +89,16 @@ export function EventStream({ events, maxEvents = 100 }: EventStreamProps) {
   }, [events, autoScroll])
 
   function formatTimestamp(ts: number): string {
-    return new Date(ts * 1000).toLocaleTimeString()
+    // Backend sends timestamps in milliseconds, so no need to multiply
+    return new Date(ts).toLocaleTimeString()
   }
 
   function getEventColor(eventType: string): string {
     return EVENT_COLORS[eventType] || '#9ca3af'
+  }
+
+  function getEventEmoji(eventType: string): string {
+    return EVENT_EMOJIS[eventType] || '📌'
   }
 
   return (
@@ -138,8 +191,8 @@ export function EventStream({ events, maxEvents = 100 }: EventStreamProps) {
                 key={event.id}
                 style={{
                   padding: '1rem',
-                  borderLeft: `3px solid ${getEventColor(event.hook_event_type)}`,
-                  backgroundColor: 'var(--bg-tertiary)',
+                  borderLeft: `5px solid ${getEventColor(event.hook_event_type)}`,
+                  background: `linear-gradient(to right, ${getEventColor(event.hook_event_type)}60 0%, ${getEventColor(event.hook_event_type)}60 8px, var(--bg-tertiary) 8px)`,
                   border: '1px solid var(--border-color)',
                   borderRadius: '6px',
                   fontSize: '0.875rem',
@@ -156,7 +209,7 @@ export function EventStream({ events, maxEvents = 100 }: EventStreamProps) {
                       fontWeight: '600',
                       color: getEventColor(event.hook_event_type)
                     }}>
-                      {event.hook_event_type}
+                      {getEventEmoji(event.hook_event_type)} {event.hook_event_type}
                     </span>
                     {event.tool_name && (
                       <span style={{
