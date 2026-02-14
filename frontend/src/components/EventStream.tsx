@@ -11,7 +11,7 @@ const EVENT_EMOJIS: Record<string, string> = {
   // Session lifecycle
   'SessionStart': '🚀',
   'SessionEnd': '🛑',
-  'Stop': '⏸️',
+  'Stop': '⏹️',
 
   // User interaction
   'UserPromptSubmit': '💬',
@@ -73,6 +73,7 @@ const EVENT_COLORS: Record<string, string> = {
 export function EventStream({ events, maxEvents = 100 }: EventStreamProps) {
   const [filter, setFilter] = useState<string>('all')
   const [autoScroll, setAutoScroll] = useState(true)
+  const [isCollapsed, setIsCollapsed] = useState(false)
   const scrollRef = useRef<HTMLDivElement>(null)
 
   const eventTypes = Array.from(new Set(events.map(e => e.hook_event_type)))
@@ -115,13 +116,24 @@ export function EventStream({ events, maxEvents = 100 }: EventStreamProps) {
     }}>
       <div style={{
         padding: '1.25rem',
-        borderBottom: '1px solid var(--border-color)',
+        borderBottom: isCollapsed ? 'none' : '1px solid var(--border-color)',
         backgroundColor: 'var(--bg-tertiary)',
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center'
       }}>
         <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+          <span
+            onClick={() => setIsCollapsed(!isCollapsed)}
+            style={{
+              fontSize: '0.875rem',
+              color: 'var(--text-secondary)',
+              cursor: 'pointer',
+              userSelect: 'none'
+            }}
+          >
+            {isCollapsed ? '▶' : '▼'}
+          </span>
           <h2 style={{
             margin: 0,
             fontSize: '1.125rem',
@@ -169,14 +181,15 @@ export function EventStream({ events, maxEvents = 100 }: EventStreamProps) {
         </label>
       </div>
 
-      <div
-        ref={scrollRef}
-        style={{
-          flex: 1,
-          overflow: 'auto',
-          padding: '1rem'
-        }}
-      >
+      {!isCollapsed && (
+        <div
+          ref={scrollRef}
+          style={{
+            flex: 1,
+            overflow: 'auto',
+            padding: '1rem'
+          }}
+        >
         {displayedEvents.length === 0 ? (
           <div style={{
             padding: '3rem',
@@ -298,6 +311,7 @@ export function EventStream({ events, maxEvents = 100 }: EventStreamProps) {
           </div>
         )}
       </div>
+      )}
     </div>
   )
 }

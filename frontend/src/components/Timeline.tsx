@@ -1,5 +1,6 @@
 import { useMemo, useState, useEffect } from 'react'
 import type { ClaudeEvent } from '../hooks/useEventStream'
+import { getSessionColor } from '../utils/sessionColors'
 
 interface TimelineProps {
   events: ClaudeEvent[]
@@ -9,7 +10,7 @@ interface TimelineProps {
 const EVENT_EMOJIS: Record<string, string> = {
   'SessionStart': '🚀',
   'SessionEnd': '🛑',
-  'Stop': '⏸️',
+  'Stop': '⏹️',
   'UserPromptSubmit': '💬',
   'AssistantMessage': '🤖',
   'PreToolUse': '🔧',
@@ -97,8 +98,38 @@ function identifyEventPairs(events: ClaudeEvent[]): Map<number, EventPair> {
   return pairs
 }
 
+// Generate time markers for the timeline
+function generateTimeMarkers(timeframeHours: number): Array<{ label: string; percent: number }> {
+  const timeframeMinutes = timeframeHours * 60
+  const markers: Array<{ label: string; percent: number }> = []
+
+  // Determine interval based on timeframe
+  let intervalMinutes: number
+  if (timeframeMinutes <= 1) {
+    intervalMinutes = 0.25 // 15 seconds
+  } else if (timeframeMinutes <= 3) {
+    intervalMinutes = 0.5 // 30 seconds
+  } else if (timeframeMinutes <= 5) {
+    intervalMinutes = 1 // 1 minute
+  } else if (timeframeMinutes <= 10) {
+    intervalMinutes = 2 // 2 minutes
+  } else {
+    intervalMinutes = 3 // 3 minutes
+  }
+
+  // Generate markers from 0 to timeframe
+  for (let minutes = intervalMinutes; minutes < timeframeMinutes; minutes += intervalMinutes) {
+    const percent = (minutes / timeframeMinutes) * 100
+    const label = minutes < 1 ? `${Math.round(minutes * 60)}s` : `${Math.round(minutes)}m`
+    markers.push({ label, percent })
+  }
+
+  return markers
+}
+
 export function Timeline({ events, timeframeHours }: TimelineProps) {
   const [now, setNow] = useState(Date.now())
+  const [isCollapsed, setIsCollapsed] = useState(false)
 
   // Update 'now' every second to make events flow left
   useEffect(() => {
@@ -119,6 +150,8 @@ export function Timeline({ events, timeframeHours }: TimelineProps) {
     })
     return groups
   }, [events])
+
+  const timeMarkers = useMemo(() => generateTimeMarkers(timeframeHours), [timeframeHours])
 
   if (sessionGroups.size === 0) {
     return (
@@ -144,11 +177,54 @@ export function Timeline({ events, timeframeHours }: TimelineProps) {
 
   return (
     <div style={{
-      display: 'flex',
-      flexDirection: 'column',
-      gap: '1.5rem'
+      backgroundColor: 'var(--bg-secondary)',
+      borderRadius: '8px',
+      border: '1px solid var(--border-color)',
+      overflow: 'hidden'
     }}>
-      {Array.from(sessionGroups.entries()).map(([sessionId, sessionEvents]) => {
+      {/* Header */}
+      <div
+        onClick={() => setIsCollapsed(!isCollapsed)}
+        style={{
+          padding: '1rem 1.25rem',
+          borderBottom: isCollapsed ? 'none' : '1px solid var(--border-color)',
+          backgroundColor: 'var(--bg-tertiary)',
+          cursor: 'pointer',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '0.75rem',
+          userSelect: 'none'
+        }}
+      >
+        <span style={{ fontSize: '0.875rem', color: 'var(--text-secondary)' }}>
+          {isCollapsed ? '▶' : '▼'}
+        </span>
+        <h2 style={{
+          margin: 0,
+          fontSize: '1.125rem',
+          fontWeight: '600',
+          color: 'var(--text-primary)'
+        }}>
+          Timeline
+        </h2>
+      </div>
+
+      {/* Content */}
+      {!isCollapsed && (
+        <div style={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '1.5rem',
+          padding: '1rem'
+        }}>
+        {Array.from(sessionGroups.entries())
+        .sort(([, eventsA], [, eventsB]) => {
+          // Sort by earliest event timestamp (session start time)
+          const earliestA = Math.min(...eventsA.map(e => e.timestamp))
+          const earliestB = Math.min(...eventsB.map(e => e.timestamp))
+          return earliestA - earliestB
+        })
+        .map(([sessionId, sessionEvents]) => {
         // Filter out events older than the timeframe
         const filteredSessionEvents = sessionEvents.filter(event => {
           const ageInMs = now - event.timestamp
@@ -162,56 +238,69 @@ export function Timeline({ events, timeframeHours }: TimelineProps) {
 
         // Identify paired events
         const eventPairs = identifyEventPairs(filteredSessionEvents)
+        const sessionColor = getSessionColor(sessionId)
 
         return (
           <div
             key={sessionId}
             style={{
-              backgroundColor: 'var(--bg-secondary)',
+              backgroundColor: sessionColor.bg,
               borderRadius: '8px',
-              border: '1px solid var(--border-color)',
-              padding: '1.25rem',
+              border: `1px solid ${sessionColor.border}`,
+              padding: '0.75rem',
               position: 'relative'
             }}
           >
             {/* Session header */}
             <div style={{
-              marginBottom: '1rem',
+              marginBottom: '0.75rem',
               display: 'flex',
               justifyContent: 'space-between',
-              alignItems: 'center'
+              alignItems: 'center',
+              gap: '1rem'
             }}>
-              <div>
+              <div style={{
+                display: 'flex',
+                alignItems: 'baseline',
+                gap: '0.5rem',
+                flex: 1,
+                minWidth: 0
+              }}>
                 <span style={{
-                  fontSize: '0.75rem',
+                  fontSize: '0.7rem',
                   color: 'var(--text-secondary)',
                   textTransform: 'uppercase',
-                  letterSpacing: '0.05em'
+                  letterSpacing: '0.05em',
+                  flexShrink: 0
                 }}>
                   Session
                 </span>
-                <div style={{
+                <span style={{
                   fontFamily: 'monospace',
-                  fontSize: '0.875rem',
+                  fontSize: '0.8rem',
                   color: 'var(--text-primary)',
-                  marginTop: '0.25rem'
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap'
                 }}>
                   {sessionId.slice(0, 12)}...
-                </div>
+                </span>
               </div>
               <div style={{
-                fontSize: '0.75rem',
-                color: 'var(--text-secondary)'
+                fontSize: '0.7rem',
+                color: 'var(--text-secondary)',
+                whiteSpace: 'nowrap',
+                flexShrink: 0
               }}>
-                {filteredSessionEvents.length} events • {timeframeLabel} timeframe
+                {filteredSessionEvents.length} events • {timeframeLabel}
               </div>
             </div>
 
             {/* Horizontal scrolling timeline */}
             <div style={{
               position: 'relative',
-              height: '150px',
-              overflowX: 'auto',
+              height: '120px',
+              overflowX: 'hidden',
               overflowY: 'hidden',
               backgroundColor: 'var(--bg-tertiary)',
               borderRadius: '6px',
@@ -224,6 +313,39 @@ export function Timeline({ events, timeframeHours }: TimelineProps) {
                 width: '100%',
                 minWidth: '100%'
               }}>
+                {/* Time markers */}
+                {timeMarkers.map((marker, index) => (
+                  <div
+                    key={`marker-${index}`}
+                    style={{
+                      position: 'absolute',
+                      right: `${marker.percent}%`,
+                      top: 0,
+                      bottom: 0,
+                      width: '1px',
+                      backgroundColor: 'var(--text-primary)',
+                      opacity: 0.3,
+                      zIndex: 0
+                    }}
+                  >
+                    <span style={{
+                      position: 'absolute',
+                      right: '0',
+                      bottom: '0',
+                      fontSize: '0.7rem',
+                      color: 'var(--text-primary)',
+                      backgroundColor: 'var(--bg-secondary)',
+                      padding: '0.2rem 0.4rem',
+                      borderRadius: '4px',
+                      whiteSpace: 'nowrap',
+                      transform: 'translateX(50%)',
+                      border: '1px solid var(--border-color)',
+                      fontWeight: '500'
+                    }}>
+                      {marker.label} ago
+                    </span>
+                  </div>
+                ))}
 
                 {/* "Now" indicator on the right */}
                 <div style={{
@@ -368,6 +490,8 @@ export function Timeline({ events, timeframeHours }: TimelineProps) {
           </div>
         )
       })}
+        </div>
+      )}
     </div>
   )
 }

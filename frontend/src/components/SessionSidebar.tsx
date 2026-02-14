@@ -210,6 +210,15 @@ export function SessionSidebar({ timeframeHours, selectedFilter, onFilterChange 
                       const sessionColor = getSessionColor(session.session_id)
                       const isSelected = selectedFilter.type === 'session' && selectedFilter.value === session.session_id
 
+                      // Show highlight if:
+                      // 1. This specific session is selected
+                      // 2. All sessions are selected
+                      // 3. This session's project is selected
+                      const shouldHighlight =
+                        isSelected ||
+                        selectedFilter.type === 'all' ||
+                        (selectedFilter.type === 'project' && selectedFilter.value === appName)
+
                       return (
                         <div
                           key={session.session_id}
@@ -217,12 +226,12 @@ export function SessionSidebar({ timeframeHours, selectedFilter, onFilterChange 
                           style={{
                             padding: '0.5rem 0.75rem',
                             marginBottom: '0.25rem',
-                            backgroundColor: isSelected ? sessionColor.bg : 'transparent',
+                            backgroundColor: shouldHighlight ? sessionColor.bg : 'transparent',
                             borderRadius: '6px',
                             cursor: 'pointer',
                             fontSize: '0.75rem',
                             transition: 'all 0.2s',
-                            border: isSelected ? `1px solid ${sessionColor.border}` : '1px solid transparent'
+                            border: shouldHighlight ? `1px solid ${sessionColor.border}` : '1px solid transparent'
                           }}
                         >
                           <div style={{

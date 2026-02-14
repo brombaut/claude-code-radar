@@ -10,6 +10,7 @@ export function ToolAnalytics({ timeframeHours = 1, sessionIds }: ToolAnalyticsP
   const [stats, setStats] = useState<ToolStats | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [isCollapsed, setIsCollapsed] = useState(false)
 
   useEffect(() => {
     loadStats()
@@ -38,17 +39,34 @@ export function ToolAnalytics({ timeframeHours = 1, sessionIds }: ToolAnalyticsP
 
   return (
     <div style={{
-      padding: '1.5rem',
       backgroundColor: 'var(--bg-secondary)',
       borderRadius: '8px',
-      border: '1px solid var(--border-color)'
+      border: '1px solid var(--border-color)',
+      overflow: 'hidden'
     }}>
-      <div style={{
-        marginBottom: '1.5rem'
-      }}>
-        <h3 style={{
+      {/* Header */}
+      <div
+        onClick={() => setIsCollapsed(!isCollapsed)}
+        style={{
+          padding: '1rem 1.25rem',
+          borderBottom: isCollapsed ? 'none' : '1px solid var(--border-color)',
+          backgroundColor: 'var(--bg-tertiary)',
+          cursor: 'pointer',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '0.75rem',
+          userSelect: 'none'
+        }}
+      >
+        <span style={{ fontSize: '0.875rem', color: 'var(--text-secondary)' }}>
+          {isCollapsed ? '▶' : '▼'}
+        </span>
+        <h2 style={{
           margin: 0,
-          color: 'var(--text-primary)'
+          fontSize: '1.125rem',
+          fontWeight: '600',
+          color: 'var(--text-primary)',
+          flex: 1
         }}>
           Tool Analytics
           {sessionIds && sessionIds.length > 0 && (
@@ -61,8 +79,12 @@ export function ToolAnalytics({ timeframeHours = 1, sessionIds }: ToolAnalyticsP
               (viewing {sessionIds.length} session{sessionIds.length > 1 ? 's' : ''})
             </span>
           )}
-        </h3>
+        </h2>
       </div>
+
+      {/* Content */}
+      {!isCollapsed && (
+        <div style={{ padding: '1rem' }}>
 
       {loading && !stats && (
         <div style={{
@@ -91,27 +113,27 @@ export function ToolAnalytics({ timeframeHours = 1, sessionIds }: ToolAnalyticsP
         <>
           <div style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))',
-            gap: '1rem',
-            marginBottom: '2rem'
+            gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))',
+            gap: '0.75rem',
+            marginBottom: '1.25rem'
           }}>
             <div style={{
-              padding: '1rem',
+              padding: '0.75rem',
               backgroundColor: 'var(--bg-tertiary)',
-              borderRadius: '8px',
+              borderRadius: '6px',
               border: '1px solid var(--border-color)'
             }}>
               <div style={{
-                fontSize: '0.75rem',
+                fontSize: '0.65rem',
                 color: 'var(--text-secondary)',
-                marginBottom: '0.5rem',
+                marginBottom: '0.375rem',
                 textTransform: 'uppercase',
                 letterSpacing: '0.05em'
               }}>
                 Total Calls
               </div>
               <div style={{
-                fontSize: '1.75rem',
+                fontSize: '1.25rem',
                 fontWeight: 'bold',
                 color: 'var(--text-primary)'
               }}>
@@ -120,22 +142,22 @@ export function ToolAnalytics({ timeframeHours = 1, sessionIds }: ToolAnalyticsP
             </div>
 
             <div style={{
-              padding: '1rem',
+              padding: '0.75rem',
               backgroundColor: 'var(--bg-tertiary)',
-              borderRadius: '8px',
+              borderRadius: '6px',
               border: '1px solid var(--border-color)'
             }}>
               <div style={{
-                fontSize: '0.75rem',
+                fontSize: '0.65rem',
                 color: 'var(--text-secondary)',
-                marginBottom: '0.5rem',
+                marginBottom: '0.375rem',
                 textTransform: 'uppercase',
                 letterSpacing: '0.05em'
               }}>
                 Success Rate
               </div>
               <div style={{
-                fontSize: '1.75rem',
+                fontSize: '1.25rem',
                 fontWeight: 'bold',
                 color: 'var(--accent-green)'
               }}>
@@ -144,22 +166,22 @@ export function ToolAnalytics({ timeframeHours = 1, sessionIds }: ToolAnalyticsP
             </div>
 
             <div style={{
-              padding: '1rem',
+              padding: '0.75rem',
               backgroundColor: 'var(--bg-tertiary)',
-              borderRadius: '8px',
+              borderRadius: '6px',
               border: '1px solid var(--border-color)'
             }}>
               <div style={{
-                fontSize: '0.75rem',
+                fontSize: '0.65rem',
                 color: 'var(--text-secondary)',
-                marginBottom: '0.5rem',
+                marginBottom: '0.375rem',
                 textTransform: 'uppercase',
                 letterSpacing: '0.05em'
               }}>
                 Successful
               </div>
               <div style={{
-                fontSize: '1.75rem',
+                fontSize: '1.25rem',
                 fontWeight: 'bold',
                 color: 'var(--accent-blue)'
               }}>
@@ -168,22 +190,22 @@ export function ToolAnalytics({ timeframeHours = 1, sessionIds }: ToolAnalyticsP
             </div>
 
             <div style={{
-              padding: '1rem',
+              padding: '0.75rem',
               backgroundColor: 'var(--bg-tertiary)',
-              borderRadius: '8px',
+              borderRadius: '6px',
               border: '1px solid var(--border-color)'
             }}>
               <div style={{
-                fontSize: '0.75rem',
+                fontSize: '0.65rem',
                 color: 'var(--text-secondary)',
-                marginBottom: '0.5rem',
+                marginBottom: '0.375rem',
                 textTransform: 'uppercase',
                 letterSpacing: '0.05em'
               }}>
                 Failed
               </div>
               <div style={{
-                fontSize: '1.75rem',
+                fontSize: '1.25rem',
                 fontWeight: 'bold',
                 color: 'var(--accent-red)'
               }}>
@@ -194,15 +216,15 @@ export function ToolAnalytics({ timeframeHours = 1, sessionIds }: ToolAnalyticsP
 
           <div>
             <h4 style={{
-              margin: '0 0 1rem 0',
-              fontSize: '0.875rem',
+              margin: '0 0 0.75rem 0',
+              fontSize: '0.75rem',
               color: 'var(--text-secondary)',
               textTransform: 'uppercase',
               letterSpacing: '0.05em'
             }}>
               Tool Usage Breakdown
             </h4>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
               {stats.tool_usage && stats.tool_usage.length > 0 ? (
                 stats.tool_usage
                   .sort((a, b) => b.count - a.count)
@@ -213,11 +235,11 @@ export function ToolAnalytics({ timeframeHours = 1, sessionIds }: ToolAnalyticsP
                       <div key={tool.tool_name} style={{
                         display: 'flex',
                         alignItems: 'center',
-                        gap: '1rem'
+                        gap: '0.75rem'
                       }}>
                         <div style={{
-                          flex: '0 0 180px',
-                          fontSize: '0.875rem',
+                          flex: '0 0 140px',
+                          fontSize: '0.8rem',
                           fontFamily: 'monospace',
                           overflow: 'hidden',
                           textOverflow: 'ellipsis',
@@ -229,8 +251,8 @@ export function ToolAnalytics({ timeframeHours = 1, sessionIds }: ToolAnalyticsP
                         <div style={{
                           flex: 1,
                           backgroundColor: 'var(--bg-primary)',
-                          borderRadius: '4px',
-                          height: '24px',
+                          borderRadius: '3px',
+                          height: '18px',
                           position: 'relative',
                           overflow: 'hidden'
                         }}>
@@ -239,13 +261,13 @@ export function ToolAnalytics({ timeframeHours = 1, sessionIds }: ToolAnalyticsP
                             height: '100%',
                             backgroundColor: 'var(--accent-blue)',
                             transition: 'width 0.3s',
-                            borderRadius: '4px'
+                            borderRadius: '3px'
                           }} />
                         </div>
                         <div style={{
-                          flex: '0 0 100px',
+                          flex: '0 0 80px',
                           textAlign: 'right',
-                          fontSize: '0.875rem',
+                          fontSize: '0.75rem',
                           color: 'var(--text-secondary)'
                         }}>
                           <span style={{ color: 'var(--text-primary)', fontWeight: '500' }}>
@@ -269,6 +291,8 @@ export function ToolAnalytics({ timeframeHours = 1, sessionIds }: ToolAnalyticsP
             </div>
           </div>
         </>
+      )}
+      </div>
       )}
     </div>
   )

@@ -58,10 +58,11 @@ function App() {
 
   return (
     <div style={{
-      minHeight: '100vh',
+      height: '100vh',
       display: 'flex',
       flexDirection: 'column',
-      backgroundColor: 'var(--bg-primary)'
+      backgroundColor: 'var(--bg-primary)',
+      overflow: 'hidden'
     }}>
       {/* Header */}
       <div style={{
@@ -71,8 +72,15 @@ function App() {
       }}>
         <h1 style={{
           margin: '0 0 0.75rem 0',
-          color: 'var(--text-primary)'
+          color: 'var(--text-primary)',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '0.75rem'
         }}>
+          <span style={{
+            fontSize: '1.75rem',
+            filter: 'grayscale(20%)'
+          }}>📡</span>
           Claude Code Radar
         </h1>
         <div style={{
@@ -173,14 +181,6 @@ function App() {
               </div>
 
               <div style={{ marginBottom: '2rem' }}>
-                <h2 style={{
-                  margin: '0 0 1rem 0',
-                  fontSize: '1.125rem',
-                  fontWeight: '600',
-                  color: 'var(--text-primary)'
-                }}>
-                  Timeline
-                </h2>
                 <Timeline events={filteredEvents} timeframeHours={timeframeHours} />
               </div>
 
