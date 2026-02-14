@@ -3,9 +3,10 @@ import { type ToolStats, fetchToolStats } from '../api/client'
 
 interface ToolAnalyticsProps {
   timeframeHours?: number
+  sessionIds?: string[]
 }
 
-export function ToolAnalytics({ timeframeHours = 1 }: ToolAnalyticsProps) {
+export function ToolAnalytics({ timeframeHours = 1, sessionIds }: ToolAnalyticsProps) {
   const [stats, setStats] = useState<ToolStats | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -50,6 +51,16 @@ export function ToolAnalytics({ timeframeHours = 1 }: ToolAnalyticsProps) {
           color: 'var(--text-primary)'
         }}>
           Tool Analytics
+          {sessionIds && sessionIds.length > 0 && (
+            <span style={{
+              marginLeft: '0.75rem',
+              fontSize: '0.75rem',
+              color: 'var(--text-secondary)',
+              fontWeight: 'normal'
+            }}>
+              (viewing {sessionIds.length} session{sessionIds.length > 1 ? 's' : ''})
+            </span>
+          )}
         </h3>
       </div>
 

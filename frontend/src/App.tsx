@@ -1,12 +1,59 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { useEventStream } from './hooks/useEventStream'
 import { EventStream } from './components/EventStream'
-import { SessionOverview } from './components/SessionOverview'
+import { SessionSidebar } from './components/SessionSidebar'
 import { ToolAnalytics } from './components/ToolAnalytics'
 
 function App() {
   const [timeframeHours, setTimeframeHours] = useState(1)
+  const [selectedFilter, setSelectedFilter] = useState<{
+    type: 'all' | 'project' | 'session'
+    value: string
+  }>({ type: 'all', value: 'all' })
+
   const { events, connected, loading } = useEventStream(timeframeHours)
+
+  // Filter events based on selection
+  const filteredEvents = useMemo(() => {
+    if (selectedFilter.type === 'all') {
+      return events
+    }
+
+    if (selectedFilter.type === 'session') {
+      return events.filter(e => e.session_id === selectedFilter.value)
+    }
+
+    if (selectedFilter.type === 'project') {
+      // Filter events by app (source_app field)
+      return events.filter(e => e.source_app === selectedFilter.value)
+    }
+
+    return events
+  }, [events, selectedFilter])
+
+  // Get selected session IDs for tool analytics
+  const selectedSessionIds = useMemo(() => {
+    if (selectedFilter.type === 'all') {
+      return undefined // All sessions
+    }
+
+    if (selectedFilter.type === 'session') {
+      return [selectedFilter.value]
+    }
+
+    if (selectedFilter.type === 'project') {
+      // Get all session IDs for this app
+      const sessionIds = new Set<string>()
+      events.forEach(e => {
+        if (e.source_app === selectedFilter.value) {
+          sessionIds.add(e.session_id)
+        }
+      })
+      return Array.from(sessionIds)
+    }
+
+    return undefined
+  }, [events, selectedFilter])
 
   return (
     <div style={{
@@ -49,7 +96,12 @@ function App() {
             {connected ? 'Connected' : 'Disconnected'}
           </span>
           <span>
-            <strong style={{ color: 'var(--text-primary)' }}>{events.length}</strong> events
+            <strong style={{ color: 'var(--text-primary)' }}>{filteredEvents.length}</strong> events
+            {selectedFilter.type !== 'all' && (
+              <span style={{ opacity: 0.7, marginLeft: '0.5rem' }}>
+                (filtered)
+              </span>
+            )}
           </span>
           <label style={{
             display: 'flex',
@@ -82,38 +134,51 @@ function App() {
         </div>
       </div>
 
-      {/* Main content */}
+      {/* Main layout: Sidebar + Content */}
       <div style={{
         flex: 1,
-        padding: '2rem',
-        overflow: 'auto'
+        display: 'flex',
+        overflow: 'hidden'
       }}>
-        {loading ? (
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            height: '400px',
-            color: 'var(--text-secondary)',
-            fontSize: '1rem'
-          }}>
-            Loading events...
-          </div>
-        ) : (
-          <>
-            <div style={{ marginBottom: '2rem' }}>
-              <SessionOverview timeframeHours={timeframeHours} />
-            </div>
+        {/* Sidebar */}
+        <SessionSidebar
+          timeframeHours={timeframeHours}
+          selectedFilter={selectedFilter}
+          onFilterChange={setSelectedFilter}
+        />
 
-            <div style={{ marginBottom: '2rem' }}>
-              <ToolAnalytics timeframeHours={timeframeHours} />
+        {/* Main content area */}
+        <div style={{
+          flex: 1,
+          overflow: 'auto',
+          padding: '2rem'
+        }}>
+          {loading ? (
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              height: '400px',
+              color: 'var(--text-secondary)',
+              fontSize: '1rem'
+            }}>
+              Loading events...
             </div>
+          ) : (
+            <>
+              <div style={{ marginBottom: '2rem' }}>
+                <ToolAnalytics
+                  timeframeHours={timeframeHours}
+                  sessionIds={selectedSessionIds}
+                />
+              </div>
 
-            <div style={{ minHeight: '400px' }}>
-              <EventStream events={events} />
-            </div>
-          </>
-        )}
+              <div style={{ minHeight: '400px' }}>
+                <EventStream events={filteredEvents} />
+              </div>
+            </>
+          )}
+        </div>
       </div>
     </div>
   )
