@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import type { ClaudeEvent } from '../hooks/useEventStream'
+import { getSessionColor } from '../utils/sessionColors'
 
 interface EventStreamProps {
   events: ClaudeEvent[]
@@ -186,19 +187,23 @@ export function EventStream({ events, maxEvents = 100 }: EventStreamProps) {
           </div>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-            {displayedEvents.map((event) => (
-              <div
-                key={event.id}
-                style={{
-                  padding: '1rem',
-                  borderLeft: `5px solid ${getEventColor(event.hook_event_type)}`,
-                  background: `linear-gradient(to right, ${getEventColor(event.hook_event_type)}60 0%, ${getEventColor(event.hook_event_type)}60 8px, var(--bg-tertiary) 8px)`,
-                  border: '1px solid var(--border-color)',
-                  borderRadius: '6px',
-                  fontSize: '0.875rem',
-                  transition: 'border-color 0.2s'
-                }}
-              >
+            {displayedEvents.map((event) => {
+              const eventColor = getEventColor(event.hook_event_type)
+              const sessionColor = getSessionColor(event.session_id)
+
+              return (
+                <div
+                  key={event.id}
+                  style={{
+                    padding: '1rem',
+                    borderLeft: `5px solid ${eventColor}`,
+                    background: `linear-gradient(to right, ${eventColor}60 0%, ${eventColor}60 8px, ${sessionColor.bg} 8px)`,
+                    border: '1px solid var(--border-color)',
+                    borderRadius: '6px',
+                    fontSize: '0.875rem',
+                    transition: 'background 0.2s'
+                  }}
+                >
                 <div style={{
                   display: 'flex',
                   justifyContent: 'space-between',
@@ -288,7 +293,8 @@ export function EventStream({ events, maxEvents = 100 }: EventStreamProps) {
                   </details>
                 )}
               </div>
-            ))}
+              )
+            })}
           </div>
         )}
       </div>

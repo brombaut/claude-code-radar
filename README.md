@@ -1,4 +1,4 @@
-# Claude Code Radar (CCR)
+# CCR: Claude Code Radar
 
 *"I see a bad moon rising, I see trouble on the way"* 🎵
 

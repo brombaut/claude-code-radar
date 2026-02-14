@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { getActiveSessions, type Session } from '../api/client'
+import { getSessionColor } from '../utils/sessionColors'
 
 interface SessionOverviewProps {
   timeframeHours?: number
@@ -82,17 +83,19 @@ export function SessionOverview({ timeframeHours = 1 }: SessionOverviewProps) {
           gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))',
           gap: '1rem'
         }}>
-          {sessions.map((session) => (
-            <div
-              key={session.session_id}
-              style={{
-                backgroundColor: 'var(--bg-secondary)',
-                borderRadius: '8px',
-                padding: '1.25rem',
-                border: '1px solid var(--border-color)',
-                transition: 'border-color 0.2s'
-              }}
-            >
+          {sessions.map((session) => {
+            const sessionColor = getSessionColor(session.session_id)
+            return (
+              <div
+                key={session.session_id}
+                style={{
+                  backgroundColor: sessionColor.bg,
+                  borderRadius: '8px',
+                  padding: '1.25rem',
+                  border: '1px solid var(--border-color)',
+                  transition: 'background-color 0.2s'
+                }}
+              >
               <div style={{ marginBottom: '0.75rem' }}>
                 <div style={{
                   fontWeight: '600',
@@ -171,7 +174,8 @@ export function SessionOverview({ timeframeHours = 1 }: SessionOverviewProps) {
                 </div>
               </div>
             </div>
-          ))}
+            )
+          })}
         </div>
       )}
     </div>
