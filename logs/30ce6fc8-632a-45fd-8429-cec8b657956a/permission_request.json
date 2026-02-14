@@ -542,5 +542,30 @@
       "description": "Start frontend dev server in background",
       "run_in_background": true
     }
+  },
+  {
+    "session_id": "30ce6fc8-632a-45fd-8429-cec8b657956a",
+    "transcript_path": "/home/ben/.claude/projects/-home-ben-work-personal-claude-code-observability/30ce6fc8-632a-45fd-8429-cec8b657956a.jsonl",
+    "cwd": "/home/ben/work_personal/claude_code_observability",
+    "permission_mode": "acceptEdits",
+    "hook_event_name": "PermissionRequest",
+    "tool_name": "Bash",
+    "tool_input": {
+      "command": "kill 62692 2>/dev/null; echo \"Frontend server stopped\"",
+      "description": "Stop the frontend server"
+    },
+    "permission_suggestions": [
+      {
+        "type": "addRules",
+        "rules": [
+          {
+            "toolName": "Bash",
+            "ruleContent": "kill:*"
+          }
+        ],
+        "behavior": "allow",
+        "destination": "localSettings"
+      }
+    ]
   }
 ]

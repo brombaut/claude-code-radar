@@ -15,7 +15,7 @@ function App() {
       backgroundColor: '#fafafa'
     }}>
       <div style={{ marginBottom: '1.5rem' }}>
-        <h1 style={{ margin: '0 0 0.5rem 0' }}>Claude Code Observability</h1>
+        <h1 style={{ margin: '0 0 0.5rem 0' }}>Claude Code Radar</h1>
         <div style={{
           display: 'flex',
           gap: '1rem',

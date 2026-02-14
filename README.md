@@ -1,6 +1,8 @@
-# Claude Code Observability
+# Claude Code Radar (CCR)
 
-Logging and monitoring hooks for Claude Code sessions.
+*"Have you ever seen the code rain?"* 🎵
+
+Real-time monitoring and logging hooks for Claude Code sessions.
 
 ## What This Does
 

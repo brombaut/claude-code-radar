@@ -8,7 +8,7 @@ from events import save_event, get_events, get_active_sessions, get_tool_stats
 import asyncio
 import json
 
-app = FastAPI(title="Claude Code Observability API")
+app = FastAPI(title="Claude Code Radar API")
 
 app.add_middleware(
     CORSMiddleware,
@@ -37,7 +37,7 @@ def startup():
 
 @app.get("/")
 def root():
-    return {"message": "Claude Code Observability API"}
+    return {"message": "Claude Code Radar API"}
 
 @app.get("/health")
 def health():
