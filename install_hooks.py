@@ -76,6 +76,52 @@ def validate_target_path(target_path_str):
     return target_path
 
 
+def copy_hook_files(ccr_root, target_path):
+    """Copy hook files from CCR project to target repository."""
+    try:
+        # Create .claude/hooks directory in target
+        hooks_source = ccr_root / '.claude' / 'hooks'
+        hooks_target = target_path / '.claude' / 'hooks'
+        hooks_target.mkdir(parents=True, exist_ok=True)
+
+        # Copy all .py files from hooks directory (excluding test files)
+        py_files = list(hooks_source.glob('*.py'))
+        copied_hooks = 0
+        for source_file in py_files:
+            if not source_file.name.startswith('test_'):
+                target_file = hooks_target / source_file.name
+                shutil.copy2(source_file, target_file)
+                copied_hooks += 1
+
+        print(f"✓ Copied {copied_hooks} hook files to {hooks_target}")
+
+        # Copy utils directory
+        utils_source = hooks_source / 'utils'
+        utils_target = hooks_target / 'utils'
+
+        # Remove existing utils directory to ensure clean state
+        if utils_target.exists():
+            shutil.rmtree(utils_target)
+
+        # Copy entire utils directory
+        shutil.copytree(utils_source, utils_target)
+        utils_count = len(list(utils_target.rglob('*')))
+        print(f"✓ Copied utils directory ({utils_count} files) to {utils_target}")
+
+        # Create .claude/status_lines directory and copy status_line_v6.py
+        status_source = ccr_root / '.claude' / 'status_lines' / 'status_line_v6.py'
+        status_target_dir = target_path / '.claude' / 'status_lines'
+        status_target_dir.mkdir(parents=True, exist_ok=True)
+
+        status_target = status_target_dir / 'status_line_v6.py'
+        shutil.copy2(status_source, status_target)
+        print(f"✓ Copied status line to {status_target}")
+
+    except Exception as e:
+        print(f"Error copying hook files: {e}", file=sys.stderr)
+        sys.exit(3)
+
+
 def main():
     """Main entry point."""
     args = parse_arguments()
@@ -89,6 +135,9 @@ def main():
     print(f"Target repository: {target_path}")
     print(f"Source app name: {args.source_app}")
     print(f"Backend URL: {args.backend_url}")
+
+    # Copy hook files to target repository
+    copy_hook_files(ccr_root, target_path)
 
     return 0
 
