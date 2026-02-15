@@ -166,29 +166,32 @@ def build_ccr_hooks_config(source_app, backend_url):
     for event_type, extra_args in events.items():
         # Convert camelCase to snake_case for script names
         # (This will be incorrect for some cases and fixed in Task 9)
-        script_name = ''.join(
+        event_script = ''.join(
             '_' + char.lower() if char.isupper() else char
             for char in event_type
-        ).lstrip('_') + '.py'
+        ).lstrip('_')
 
-        # Build send_event.py command with arguments
-        send_event_cmd = f"send_event.py --source-app {source_app} --event-type {event_type}"
+        # Build the hooks list with proper structure
+        hooks_list = [
+            {
+                'type': 'command',
+                'command': f'uv run $CLAUDE_PROJECT_DIR/.claude/hooks/{event_script}.py'
+            },
+            {
+                'type': 'command',
+                'command': f'uv run $CLAUDE_PROJECT_DIR/.claude/hooks/send_event.py --source-app {source_app} --event-type {event_type}' +
+                          (f' {extra_args}' if extra_args else '') +
+                          (f' --server-url {backend_url}' if backend_url != 'http://localhost:8000/events' else '')
+            }
+        ]
 
-        if extra_args:
-            send_event_cmd += f" {extra_args}"
-
-        # Add --server-url only if not default
-        if backend_url != 'http://localhost:8000/events':
-            send_event_cmd += f" --server-url {backend_url}"
-
-        # Create hook configuration for this event
-        hooks_config[event_type] = {
-            "matcher": "",
-            "commands": [
-                script_name,
-                send_event_cmd
-            ]
-        }
+        # Create hook configuration for this event with correct structure
+        hooks_config[event_type] = [
+            {
+                'matcher': '',
+                'hooks': hooks_list
+            }
+        ]
 
     # Build complete configuration object
     config = {
