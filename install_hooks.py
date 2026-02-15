@@ -48,11 +48,26 @@ Examples:
     return parser.parse_args()
 
 
+def validate_ccr_project():
+    """Validate that we're running from the CCR project root."""
+    ccr_root = Path.cwd()
+    send_event_hook = ccr_root / '.claude' / 'hooks' / 'send_event.py'
+
+    if not send_event_hook.exists():
+        print("Error: Must run this script from CCR project root", file=sys.stderr)
+        print(f"Expected to find: {send_event_hook}", file=sys.stderr)
+        sys.exit(1)
+
+    return ccr_root
+
+
 def main():
     """Main entry point."""
     args = parse_arguments()
 
-    # Placeholder - print values for now
+    ccr_root = validate_ccr_project()
+    print(f"✓ Running from CCR project: {ccr_root}")
+
     print(f"Target repository: {args.target_repo_path}")
     print(f"Source app name: {args.source_app}")
     print(f"Backend URL: {args.backend_url}")
