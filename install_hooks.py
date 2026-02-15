@@ -142,6 +142,67 @@ def load_settings(target_path):
         sys.exit(3)
 
 
+def build_ccr_hooks_config(source_app, backend_url):
+    """Build CCR hooks configuration object."""
+    # Define events and their extra arguments for send_event.py
+    events = {
+        'PreToolUse': '--summarize',
+        'PostToolUse': '--summarize',
+        'PostToolUseFailure': '--summarize',
+        'PermissionRequest': '--summarize',
+        'Notification': '--summarize',
+        'SubagentStart': '--summarize',
+        'SubagentStop': '--summarize',
+        'Stop': '--add-chat',
+        'PreCompact': '--summarize',
+        'UserPromptSubmit': '',
+        'SessionStart': '',
+        'SessionEnd': ''
+    }
+
+    # Build hooks configuration
+    hooks_config = {}
+
+    for event_type, extra_args in events.items():
+        # Convert camelCase to snake_case for script names
+        # (This will be incorrect for some cases and fixed in Task 9)
+        script_name = ''.join(
+            '_' + char.lower() if char.isupper() else char
+            for char in event_type
+        ).lstrip('_') + '.py'
+
+        # Build send_event.py command with arguments
+        send_event_cmd = f"send_event.py --source-app {source_app} --event-type {event_type}"
+
+        if extra_args:
+            send_event_cmd += f" {extra_args}"
+
+        # Add --server-url only if not default
+        if backend_url != 'http://localhost:8000/events':
+            send_event_cmd += f" --server-url {backend_url}"
+
+        # Create hook configuration for this event
+        hooks_config[event_type] = {
+            "matcher": "",
+            "commands": [
+                script_name,
+                send_event_cmd
+            ]
+        }
+
+    # Build complete configuration object
+    config = {
+        "hooks": hooks_config,
+        "statusLine": {
+            "type": "command",
+            "command": "uv run $CLAUDE_PROJECT_DIR/.claude/status_lines/status_line_v6.py",
+            "padding": 0
+        }
+    }
+
+    return config
+
+
 def main():
     """Main entry point."""
     args = parse_arguments()
@@ -165,6 +226,10 @@ def main():
         print("✓ Loaded existing settings.json")
     else:
         print("✓ No existing settings.json (will create new)")
+
+    # Build CCR hooks configuration
+    ccr_config = build_ccr_hooks_config(args.source_app, args.backend_url)
+    print(f"✓ Built CCR hooks configuration for '{args.source_app}'")
 
     return 0
 
