@@ -68,10 +68,14 @@ function App() {
       <div style={{
         backgroundColor: 'var(--bg-secondary)',
         borderBottom: '1px solid var(--border-color)',
-        padding: '1.5rem 2rem'
+        padding: '1rem 2rem',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        gap: '2rem'
       }}>
         <h1 style={{
-          margin: '0 0 0.75rem 0',
+          margin: 0,
           color: 'var(--text-primary)',
           display: 'flex',
           alignItems: 'center',
@@ -88,8 +92,7 @@ function App() {
           gap: '2rem',
           alignItems: 'center',
           fontSize: '0.875rem',
-          color: 'var(--text-secondary)',
-          flexWrap: 'wrap'
+          color: 'var(--text-secondary)'
         }}>
           <span style={{
             display: 'flex',
