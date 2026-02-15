@@ -61,6 +61,21 @@ def validate_ccr_project():
     return ccr_root
 
 
+def validate_target_path(target_path_str):
+    """Validate the target repository path."""
+    target_path = Path(target_path_str).resolve()
+
+    if not target_path.exists():
+        print(f"Error: Target path does not exist: {target_path}", file=sys.stderr)
+        sys.exit(1)
+
+    if not target_path.is_dir():
+        print(f"Error: Target path is not a directory: {target_path}", file=sys.stderr)
+        sys.exit(2)
+
+    return target_path
+
+
 def main():
     """Main entry point."""
     args = parse_arguments()
@@ -68,7 +83,10 @@ def main():
     ccr_root = validate_ccr_project()
     print(f"✓ Running from CCR project: {ccr_root}")
 
-    print(f"Target repository: {args.target_repo_path}")
+    target_path = validate_target_path(args.target_repo_path)
+    print(f"✓ Target path validated: {target_path}")
+
+    print(f"Target repository: {target_path}")
     print(f"Source app name: {args.source_app}")
     print(f"Backend URL: {args.backend_url}")
 
