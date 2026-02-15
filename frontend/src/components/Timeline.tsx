@@ -175,6 +175,9 @@ export function Timeline({ events, timeframeHours }: TimelineProps) {
     ? `${Math.round(timeframeHours * 60)}m`
     : `${timeframeHours}h`
 
+  // Extract all session IDs for color assignment
+  const allSessionIds = Array.from(sessionGroups.keys())
+
   return (
     <div style={{
       backgroundColor: 'var(--bg-secondary)',
@@ -218,11 +221,9 @@ export function Timeline({ events, timeframeHours }: TimelineProps) {
           padding: '1rem'
         }}>
         {Array.from(sessionGroups.entries())
-        .sort(([, eventsA], [, eventsB]) => {
-          // Sort by earliest event timestamp (session start time)
-          const earliestA = Math.min(...eventsA.map(e => e.timestamp))
-          const earliestB = Math.min(...eventsB.map(e => e.timestamp))
-          return earliestA - earliestB
+        .sort(([sessionIdA], [sessionIdB]) => {
+          // Sort by session ID alpha-numerically
+          return sessionIdA.localeCompare(sessionIdB)
         })
         .map(([sessionId, sessionEvents]) => {
         // Filter out events older than the timeframe
@@ -238,7 +239,7 @@ export function Timeline({ events, timeframeHours }: TimelineProps) {
 
         // Identify paired events
         const eventPairs = identifyEventPairs(filteredSessionEvents)
-        const sessionColor = getSessionColor(sessionId)
+        const sessionColor = getSessionColor(sessionId, allSessionIds)
 
         return (
           <div

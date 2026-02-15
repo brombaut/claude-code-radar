@@ -78,6 +78,9 @@ export function EventStream({ events, maxEvents = 100 }: EventStreamProps) {
 
   const eventTypes = Array.from(new Set(events.map(e => e.hook_event_type)))
 
+  // Extract all unique session IDs for color assignment
+  const allSessionIds = Array.from(new Set(events.map(e => e.session_id)))
+
   const filteredEvents = filter === 'all'
     ? events
     : events.filter(e => e.hook_event_type === filter)
@@ -202,7 +205,7 @@ export function EventStream({ events, maxEvents = 100 }: EventStreamProps) {
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
             {displayedEvents.map((event) => {
               const eventColor = getEventColor(event.hook_event_type)
-              const sessionColor = getSessionColor(event.session_id)
+              const sessionColor = getSessionColor(event.session_id, allSessionIds)
 
               return (
                 <div
