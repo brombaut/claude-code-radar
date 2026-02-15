@@ -122,6 +122,26 @@ def copy_hook_files(ccr_root, target_path):
         sys.exit(3)
 
 
+def load_settings(target_path):
+    """Load existing settings.json from target repository if it exists."""
+    settings_file = target_path / '.claude' / 'settings.json'
+
+    if not settings_file.exists():
+        return {}
+
+    try:
+        with open(settings_file, 'r') as f:
+            return json.load(f)
+    except json.JSONDecodeError as e:
+        print(f"Error: Invalid JSON in {settings_file}", file=sys.stderr)
+        print(f"JSON error: {e}", file=sys.stderr)
+        print("Please fix the JSON syntax and try again.", file=sys.stderr)
+        sys.exit(3)
+    except Exception as e:
+        print(f"Error reading settings file {settings_file}: {e}", file=sys.stderr)
+        sys.exit(3)
+
+
 def main():
     """Main entry point."""
     args = parse_arguments()
@@ -138,6 +158,13 @@ def main():
 
     # Copy hook files to target repository
     copy_hook_files(ccr_root, target_path)
+
+    # Load existing settings.json if present
+    existing_settings = load_settings(target_path)
+    if existing_settings:
+        print("✓ Loaded existing settings.json")
+    else:
+        print("✓ No existing settings.json (will create new)")
 
     return 0
 
