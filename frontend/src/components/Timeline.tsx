@@ -151,6 +151,23 @@ export function Timeline({ events, timeframeHours }: TimelineProps) {
     return groups
   }, [events])
 
+  // Group sessions by app
+  const appGroups = useMemo(() => {
+    const groups = new Map<string, Map<string, ClaudeEvent[]>>()
+
+    sessionGroups.forEach((sessionEvents, sessionId) => {
+      // Get app name from first event
+      const appName = sessionEvents[0]?.source_app || 'Unknown App'
+
+      if (!groups.has(appName)) {
+        groups.set(appName, new Map())
+      }
+      groups.get(appName)!.set(sessionId, sessionEvents)
+    })
+
+    return groups
+  }, [sessionGroups])
+
   const timeMarkers = useMemo(() => generateTimeMarkers(timeframeHours), [timeframeHours])
 
   if (sessionGroups.size === 0) {
@@ -220,12 +237,48 @@ export function Timeline({ events, timeframeHours }: TimelineProps) {
           gap: '1.5rem',
           padding: '1rem'
         }}>
-        {Array.from(sessionGroups.entries())
-        .sort(([sessionIdA], [sessionIdB]) => {
-          // Sort by session ID alpha-numerically
-          return sessionIdA.localeCompare(sessionIdB)
+        {Array.from(appGroups.entries())
+        .sort(([appNameA], [appNameB]) => {
+          // Sort by app name alpha-numerically
+          return appNameA.localeCompare(appNameB)
         })
-        .map(([sessionId, sessionEvents]) => {
+        .map(([appName, appSessions]) => (
+          <div key={appName} style={{
+            border: '2px solid var(--border-color)',
+            borderRadius: '8px',
+            padding: '1rem',
+            backgroundColor: 'rgba(0, 0, 0, 0.1)'
+          }}>
+            {/* App Group Header */}
+            <div style={{
+              fontSize: '0.75rem',
+              fontWeight: '600',
+              color: 'var(--text-secondary)',
+              textTransform: 'uppercase',
+              letterSpacing: '0.05em',
+              padding: '0.5rem 0.75rem',
+              backgroundColor: 'var(--bg-tertiary)',
+              borderRadius: '6px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.5rem',
+              marginBottom: '1rem'
+            }}>
+              <span>📱</span>
+              {appName}
+              <span style={{ opacity: 0.6, fontWeight: 'normal' }}>
+                ({appSessions.size} {appSessions.size === 1 ? 'session' : 'sessions'})
+              </span>
+            </div>
+
+            {/* Sessions in this app */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            {Array.from(appSessions.entries())
+            .sort(([sessionIdA], [sessionIdB]) => {
+              // Sort by session ID alpha-numerically
+              return sessionIdA.localeCompare(sessionIdB)
+            })
+            .map(([sessionId, sessionEvents]) => {
         // Filter out events older than the timeframe
         const filteredSessionEvents = sessionEvents.filter(event => {
           const ageInMs = now - event.timestamp
@@ -279,12 +332,9 @@ export function Timeline({ events, timeframeHours }: TimelineProps) {
                 <span style={{
                   fontFamily: 'monospace',
                   fontSize: '0.8rem',
-                  color: 'var(--text-primary)',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                  whiteSpace: 'nowrap'
+                  color: 'var(--text-primary)'
                 }}>
-                  {sessionId.slice(0, 12)}...
+                  {sessionId}
                 </span>
               </div>
               <div style={{
@@ -491,6 +541,9 @@ export function Timeline({ events, timeframeHours }: TimelineProps) {
           </div>
         )
       })}
+            </div>
+          </div>
+        ))}
         </div>
       )}
     </div>
