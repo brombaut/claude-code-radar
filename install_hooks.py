@@ -229,6 +229,18 @@ def merge_settings(existing, ccr_config):
     return merged
 
 
+def write_settings(target_path, merged_settings):
+    settings_file = target_path / '.claude' / 'settings.json'
+    try:
+        settings_file.parent.mkdir(parents=True, exist_ok=True)
+        with open(settings_file, 'w') as f:
+            json.dump(merged_settings, f, indent=2)
+        print("✓ Updated .claude/settings.json (merged with existing config)")
+    except Exception as e:
+        print(f"Error writing settings file: {e}", file=sys.stderr)
+        sys.exit(3)
+
+
 def main():
     """Main entry point."""
     args = parse_arguments()
@@ -238,10 +250,6 @@ def main():
 
     target_path = validate_target_path(args.target_repo_path)
     print(f"✓ Target path validated: {target_path}")
-
-    print(f"Target repository: {target_path}")
-    print(f"Source app name: {args.source_app}")
-    print(f"Backend URL: {args.backend_url}")
 
     # Copy hook files to target repository
     copy_hook_files(ccr_root, target_path)
@@ -260,6 +268,15 @@ def main():
     # Merge CCR hooks with existing configuration
     merged_settings = merge_settings(existing_settings, ccr_config)
     print("✓ Merged CCR hooks with existing configuration")
+
+    # Write merged settings to target
+    write_settings(target_path, merged_settings)
+
+    print("\nInstallation complete!\n")
+    print("Next steps:")
+    print(f"1. Start CCR backend: cd {ccr_root} && uvicorn backend.main:app")
+    print(f"2. Start CCR frontend: cd {ccr_root}/frontend && npm run dev")
+    print(f"3. Use Claude Code in {target_path} - events will appear in dashboard")
 
     return 0
 
