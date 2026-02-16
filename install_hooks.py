@@ -206,6 +206,29 @@ def build_ccr_hooks_config(source_app, backend_url):
     return config
 
 
+def merge_settings(existing, ccr_config):
+    merged = existing.copy()
+    merged['statusLine'] = ccr_config['statusLine']
+
+    if 'hooks' not in merged:
+        merged['hooks'] = {}
+
+    for event_type, ccr_event_config in ccr_config['hooks'].items():
+        if event_type not in merged['hooks']:
+            merged['hooks'][event_type] = ccr_event_config
+        else:
+            existing_event = merged['hooks'][event_type]
+            ccr_hooks = ccr_event_config[0]['hooks']
+
+            if existing_event and len(existing_event) > 0:
+                target_matcher = existing_event[0]
+                if 'hooks' not in target_matcher:
+                    target_matcher['hooks'] = []
+                target_matcher['hooks'].extend(ccr_hooks)
+
+    return merged
+
+
 def main():
     """Main entry point."""
     args = parse_arguments()
@@ -233,6 +256,10 @@ def main():
     # Build CCR hooks configuration
     ccr_config = build_ccr_hooks_config(args.source_app, args.backend_url)
     print(f"✓ Built CCR hooks configuration for '{args.source_app}'")
+
+    # Merge CCR hooks with existing configuration
+    merged_settings = merge_settings(existing_settings, ccr_config)
+    print("✓ Merged CCR hooks with existing configuration")
 
     return 0
 
