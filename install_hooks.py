@@ -143,65 +143,65 @@ def load_settings(target_path):
 
 
 def build_ccr_hooks_config(source_app, backend_url):
-    """Build CCR hooks configuration object."""
-    # Define events and their extra arguments for send_event.py
-    events = {
-        'PreToolUse': '--summarize',
-        'PostToolUse': '--summarize',
-        'PostToolUseFailure': '--summarize',
-        'PermissionRequest': '--summarize',
-        'Notification': '--summarize',
-        'SubagentStart': '--summarize',
-        'SubagentStop': '--summarize',
-        'Stop': '--add-chat',
-        'PreCompact': '--summarize',
-        'UserPromptSubmit': '',
-        'SessionStart': '',
-        'SessionEnd': ''
+    hook_configs = {
+        'PreToolUse': ('pre_tool_use.py', []),
+        'PostToolUse': ('post_tool_use.py', []),
+        'PostToolUseFailure': ('post_tool_use_failure.py', []),
+        'PermissionRequest': ('permission_request.py', []),
+        'Notification': ('notification.py', []),
+        'SubagentStart': ('subagent_start.py', []),
+        'SubagentStop': ('subagent_stop.py', []),
+        'Stop': ('stop.py', ['--chat']),
+        'PreCompact': ('pre_compact.py', []),
+        'UserPromptSubmit': ('user_prompt_submit.py', ['--log-only', '--store-last-prompt', '--name-agent']),
+        'SessionStart': ('session_start.py', []),
+        'SessionEnd': ('session_end.py', []),
     }
 
-    # Build hooks configuration
-    hooks_config = {}
+    send_event_extras = {
+        'PreToolUse': ['--summarize'],
+        'PostToolUse': ['--summarize'],
+        'PostToolUseFailure': ['--summarize'],
+        'PermissionRequest': ['--summarize'],
+        'Notification': ['--summarize'],
+        'Stop': ['--add-chat'],
+        'UserPromptSubmit': ['--summarize'],
+    }
 
-    for event_type, extra_args in events.items():
-        # Convert camelCase to snake_case for script names
-        # (This will be incorrect for some cases and fixed in Task 9)
-        event_script = ''.join(
-            '_' + char.lower() if char.isupper() else char
-            for char in event_type
-        ).lstrip('_')
+    config = {
+        'hooks': {},
+        'statusLine': {
+            'type': 'command',
+            'command': 'uv run $CLAUDE_PROJECT_DIR/.claude/status_lines/status_line_v6.py',
+            'padding': 0
+        }
+    }
 
-        # Build the hooks list with proper structure
+    for event_type, (script_name, hook_args) in hook_configs.items():
+        hook_cmd = f'uv run $CLAUDE_PROJECT_DIR/.claude/hooks/{script_name}'
+        if hook_args:
+            hook_cmd += f' {" ".join(hook_args)}'
+
+        send_event_cmd = f'uv run $CLAUDE_PROJECT_DIR/.claude/hooks/send_event.py --source-app {source_app} --event-type {event_type}'
+
+        extra_args = send_event_extras.get(event_type, [])
+        if extra_args:
+            send_event_cmd += f' {" ".join(extra_args)}'
+
+        if backend_url != 'http://localhost:8000/events':
+            send_event_cmd += f' --server-url {backend_url}'
+
         hooks_list = [
-            {
-                'type': 'command',
-                'command': f'uv run $CLAUDE_PROJECT_DIR/.claude/hooks/{event_script}.py'
-            },
-            {
-                'type': 'command',
-                'command': f'uv run $CLAUDE_PROJECT_DIR/.claude/hooks/send_event.py --source-app {source_app} --event-type {event_type}' +
-                          (f' {extra_args}' if extra_args else '') +
-                          (f' --server-url {backend_url}' if backend_url != 'http://localhost:8000/events' else '')
-            }
+            {'type': 'command', 'command': hook_cmd},
+            {'type': 'command', 'command': send_event_cmd}
         ]
 
-        # Create hook configuration for this event with correct structure
-        hooks_config[event_type] = [
+        config['hooks'][event_type] = [
             {
                 'matcher': '',
                 'hooks': hooks_list
             }
         ]
-
-    # Build complete configuration object
-    config = {
-        "hooks": hooks_config,
-        "statusLine": {
-            "type": "command",
-            "command": "uv run $CLAUDE_PROJECT_DIR/.claude/status_lines/status_line_v6.py",
-            "padding": 0
-        }
-    }
 
     return config
 
