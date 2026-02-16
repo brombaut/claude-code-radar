@@ -247,7 +247,7 @@ export function SessionSidebar({ timeframeHours, selectedFilter, onFilterChange 
                             textOverflow: 'ellipsis',
                             whiteSpace: 'nowrap'
                           }}>
-                            {session.session_id.slice(0, 12)}...
+                            {session.session_id}
                           </div>
                           <div style={{
                             display: 'flex',
