@@ -1,8 +1,13 @@
-# CCR: Claude Code Radar
-
-*"I see a bad moon rising, I see trouble on the way"* 🎵
-
-Real-time monitoring and logging hooks for Claude Code sessions.
+<table>
+  <tr>
+    <td><img src="assets/ccr-logo.png" alt="CCR Logo" width="150" height="150"></td>
+    <td>
+      <h1>CCR: Claude Code Radar</h1>
+      <em>"I see a bad moon rising, I see trouble on the way"</em> 🎵<br><br>
+      Real-time monitoring and logging hooks for Claude Code sessions.
+    </td>
+  </tr>
+</table>
 
 ## What This Does
 

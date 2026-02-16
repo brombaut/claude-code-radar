@@ -4,6 +4,7 @@ import { EventStream } from './components/EventStream'
 import { SessionSidebar } from './components/SessionSidebar'
 import { ToolAnalytics } from './components/ToolAnalytics'
 import { Timeline } from './components/Timeline'
+import { CcrLogo } from './components/CcrLogo'
 
 function App() {
   const [timeframeHours, setTimeframeHours] = useState(5 / 60) // 5 minutes default
@@ -68,7 +69,7 @@ function App() {
       <div style={{
         backgroundColor: 'var(--bg-secondary)',
         borderBottom: '1px solid var(--border-color)',
-        padding: '1rem 2rem',
+        padding: '0.5rem 1.5rem',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
@@ -81,10 +82,7 @@ function App() {
           alignItems: 'center',
           gap: '0.75rem'
         }}>
-          <span style={{
-            fontSize: '1.75rem',
-            filter: 'grayscale(20%)'
-          }}>📡</span>
+          <CcrLogo width="6rem" height="6rem" />
           Claude Code Radar
         </h1>
         <div style={{
