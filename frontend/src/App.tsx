@@ -24,7 +24,7 @@ function App() {
         const prev = latestAlert.get(e.session_id) ?? 0
         if (e.timestamp > prev) latestAlert.set(e.session_id, e.timestamp)
       }
-      if (e.hook_event_type === 'UserPromptSubmit') {
+      if (e.hook_event_type === 'UserPromptSubmit' || e.hook_event_type === 'SessionEnd') {
         const prev = latestPrompt.get(e.session_id) ?? 0
         if (e.timestamp > prev) latestPrompt.set(e.session_id, e.timestamp)
       }
