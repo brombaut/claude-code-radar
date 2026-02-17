@@ -347,12 +347,12 @@ export function ToolAnalytics({ timeframeHours = 1 }: ToolAnalyticsProps) {
                             return (
                               <g key={d.hour_bucket}>
                                 <rect
-                                  x={x} y={chartH - totalH}
+                                  x={x} y={chartH - inputH}
                                   width={barW} height={inputH}
                                   fill="var(--accent-blue)" opacity={0.7}
                                 />
                                 <rect
-                                  x={x} y={chartH - outputH}
+                                  x={x} y={chartH - totalH}
                                   width={barW} height={outputH}
                                   fill="var(--accent-green)" opacity={0.7}
                                 />
