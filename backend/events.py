@@ -134,3 +134,54 @@ def get_tool_stats(hours: float = 1) -> dict:
             "tool_usage": tool_usage,
             "success_failure": success_failure
         }
+
+def get_token_stats(hours: float = 1) -> dict:
+    """Get token usage statistics for last N hours."""
+    with get_db() as conn:
+        cutoff = int((time.time() - hours * 3600) * 1000)
+        cursor = conn.cursor()
+
+        cursor.execute("""
+            SELECT
+                COALESCE(SUM(json_extract(payload, '$.token_usage.input_tokens')), 0)            AS input_tokens,
+                COALESCE(SUM(json_extract(payload, '$.token_usage.output_tokens')), 0)           AS output_tokens,
+                COALESCE(SUM(json_extract(payload, '$.token_usage.cache_read_input_tokens')), 0) AS cache_read_tokens,
+                COALESCE(SUM(json_extract(payload, '$.token_usage.cache_creation_input_tokens')), 0) AS cache_creation_tokens,
+                COUNT(*) AS request_count
+            FROM events
+            WHERE timestamp > ? AND hook_event_type = 'TokenUsage'
+        """, (cutoff,))
+        totals = dict(cursor.fetchone())
+
+        cursor.execute("""
+            SELECT
+                session_id,
+                COALESCE(SUM(json_extract(payload, '$.token_usage.input_tokens')), 0)            AS input_tokens,
+                COALESCE(SUM(json_extract(payload, '$.token_usage.output_tokens')), 0)           AS output_tokens,
+                COALESCE(SUM(json_extract(payload, '$.token_usage.cache_read_input_tokens')), 0) AS cache_read_tokens,
+                COUNT(*) AS request_count
+            FROM events
+            WHERE timestamp > ? AND hook_event_type = 'TokenUsage'
+            GROUP BY session_id
+            ORDER BY (input_tokens + output_tokens) DESC
+            LIMIT 10
+        """, (cutoff,))
+        by_session = [dict(row) for row in cursor.fetchall()]
+
+        cursor.execute("""
+            SELECT
+                (timestamp / 3600000) * 3600000 AS hour_bucket,
+                COALESCE(SUM(json_extract(payload, '$.token_usage.input_tokens')), 0)  AS input_tokens,
+                COALESCE(SUM(json_extract(payload, '$.token_usage.output_tokens')), 0) AS output_tokens
+            FROM events
+            WHERE timestamp > ? AND hook_event_type = 'TokenUsage'
+            GROUP BY hour_bucket
+            ORDER BY hour_bucket ASC
+        """, (cutoff,))
+        time_series = [dict(row) for row in cursor.fetchall()]
+
+        return {
+            "totals": totals,
+            "by_session": by_session,
+            "time_series": time_series,
+        }
