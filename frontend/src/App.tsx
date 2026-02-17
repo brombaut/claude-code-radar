@@ -159,8 +159,8 @@ function App() {
               <option value={1 / 60}>Last 1 min</option>
               <option value={3 / 60}>Last 3 min</option>
               <option value={5 / 60}>Last 5 min</option>
-              <option value={30 / 60}>Last 30 min</option>
               <option value={15 / 60}>Last 15 min</option>
+              <option value={30 / 60}>Last 30 min</option>
             </select>
           </label>
         </div>
