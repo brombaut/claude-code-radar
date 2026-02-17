@@ -1,0 +1,6 @@
+{
+  "database": "dolt",
+  "jsonl_export": "issues.jsonl",
+  "backend": "dolt",
+  "dolt_database": "beads_claude_code_observability"
+}
