@@ -77,9 +77,15 @@ def get_active_sessions(minutes: int = 60) -> list[dict]:
         cursor.execute("""
             SELECT
                 e.session_id,
+                (SELECT source_app FROM events
+                 WHERE session_id = e.session_id
+                 ORDER BY timestamp ASC LIMIT 1) as source_app,
                 (SELECT model_name FROM events
                  WHERE session_id = e.session_id
                  ORDER BY timestamp DESC LIMIT 1) as model_name,
+                (SELECT hook_event_type FROM events
+                 WHERE session_id = e.session_id
+                 ORDER BY timestamp DESC LIMIT 1) as last_event_type,
                 MAX(e.timestamp) as last_activity,
                 COUNT(*) as event_count
             FROM events e

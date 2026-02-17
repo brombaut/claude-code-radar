@@ -3,7 +3,9 @@ const API_BASE_URL = 'http://localhost:8000'
 
 export interface Session {
   session_id: string
+  source_app: string | null
   model_name: string | null
+  last_event_type: string | null
   last_activity: number
   event_count: number
 }

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { getActiveSessions, getEvents, type Session } from '../api/client'
+import { getActiveSessions, type Session } from '../api/client'
 import { getSessionColor } from '../utils/sessionColors'
 
 const EVENT_EMOJIS: Record<string, string> = {
@@ -41,36 +41,20 @@ export function SessionSidebar({ timeframeHours, selectedFilter, onFilterChange,
         const minutes = Math.ceil(timeframeHours * 60)
         const sessionsResponse = await getActiveSessions(minutes)
 
-        // Get events for each session to extract app info
         const appMap: SessionsByApp = {}
         const eventTypeMap: Record<string, string> = {}
 
         for (const session of sessionsResponse.sessions) {
-          try {
-            const eventsResponse = await getEvents(1, session.session_id)
-            const event = eventsResponse.events[0]
+          const appName = session.source_app ?? 'Unknown App'
 
-            // Extract app name from source_app
-            let appName = 'Unknown App'
-            if (event?.source_app) {
-              appName = event.source_app
-            }
-
-            if (event?.hook_event_type) {
-              eventTypeMap[session.session_id] = event.hook_event_type
-            }
-
-            if (!appMap[appName]) {
-              appMap[appName] = []
-            }
-            appMap[appName].push(session)
-          } catch {
-            // If we can't get events for a session, put it in unknown
-            if (!appMap['Unknown App']) {
-              appMap['Unknown App'] = []
-            }
-            appMap['Unknown App'].push(session)
+          if (session.last_event_type) {
+            eventTypeMap[session.session_id] = session.last_event_type
           }
+
+          if (!appMap[appName]) {
+            appMap[appName] = []
+          }
+          appMap[appName].push(session)
         }
 
         setSessionsByApp(appMap)
