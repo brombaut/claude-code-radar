@@ -186,3 +186,4 @@ When working on this codebase:
 - **Event schema changes**: Update all three components (hook, backend, frontend)
 - **Performance**: Profile hooks if Claude Code feels slow
 - **Database queries**: Keep them simple; SQLite is fast enough for this use case
+

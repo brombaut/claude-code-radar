@@ -4,10 +4,12 @@ import { EventStream } from './components/EventStream'
 import { SessionSidebar } from './components/SessionSidebar'
 import { ToolAnalytics } from './components/ToolAnalytics'
 import { Timeline } from './components/Timeline'
+import { TabBar } from './components/TabBar'
 import { CcrLogo } from './components/CcrLogo'
 
 function App() {
   const [timeframeHours, setTimeframeHours] = useState(5 / 60) // 5 minutes default
+  const [activeTab, setActiveTab] = useState('timeline')
   const [selectedFilter, setSelectedFilter] = useState<{
     type: 'all' | 'project' | 'session'
     value: string
@@ -197,20 +199,32 @@ function App() {
             </div>
           ) : (
             <>
-              <div style={{ marginBottom: '2rem' }}>
+              <TabBar
+                tabs={[
+                  { key: 'timeline', label: 'Timeline' },
+                  { key: 'analytics', label: 'Analytics' },
+                ]}
+                activeTab={activeTab}
+                onTabChange={setActiveTab}
+              />
+
+              {activeTab === 'timeline' && (
+                <>
+                  <div style={{ marginBottom: '2rem' }}>
+                    <Timeline events={filteredEvents} timeframeHours={timeframeHours} alertingSessionIds={alertingSessionIds} />
+                  </div>
+                  <div style={{ minHeight: '400px' }}>
+                    <EventStream events={filteredEvents} />
+                  </div>
+                </>
+              )}
+
+              {activeTab === 'analytics' && (
                 <ToolAnalytics
                   timeframeHours={timeframeHours}
                   sessionIds={selectedSessionIds}
                 />
-              </div>
-
-              <div style={{ marginBottom: '2rem' }}>
-                <Timeline events={filteredEvents} timeframeHours={timeframeHours} alertingSessionIds={alertingSessionIds} />
-              </div>
-
-              <div style={{ minHeight: '400px' }}>
-                <EventStream events={filteredEvents} />
-              </div>
+              )}
             </>
           )}
         </div>
