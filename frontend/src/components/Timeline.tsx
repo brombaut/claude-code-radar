@@ -239,8 +239,12 @@ export function Timeline({ events, timeframeHours, alertingSessionIds }: Timelin
           padding: '1rem'
         }}>
         {Array.from(appGroups.entries())
+        .filter(([, appSessions]) => {
+          return Array.from(appSessions.values()).some(sessionEvents =>
+            sessionEvents.some(event => (now - event.timestamp) <= timeframeMs)
+          )
+        })
         .sort(([appNameA], [appNameB]) => {
-          // Sort by app name alpha-numerically
           return appNameA.localeCompare(appNameB)
         })
         .map(([appName, appSessions]) => (
