@@ -4,7 +4,7 @@ from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 from typing import Optional
 from database import init_db
-from events import save_event, get_events, get_active_sessions, get_tool_stats
+from events import save_event, get_events, get_active_sessions, get_tool_stats, get_token_stats
 import asyncio
 import json
 
@@ -98,6 +98,12 @@ def active_sessions(minutes: int = 60):
 def tool_statistics(hours: float = 1):
     """Get tool usage statistics."""
     stats = get_tool_stats(hours=hours)
+    return stats
+
+@app.get("/api/tokens/stats")
+def token_statistics(hours: float = 1):
+    """Get token usage statistics."""
+    stats = get_token_stats(hours)
     return stats
 
 async def event_generator():
