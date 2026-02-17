@@ -57,8 +57,6 @@ export function SessionOverview({ timeframeHours = 1 }: SessionOverviewProps) {
     )
   }
 
-  // Extract all session IDs for color assignment
-  const allSessionIds = sessions.map(s => s.session_id)
 
   return (
     <div>
@@ -87,7 +85,7 @@ export function SessionOverview({ timeframeHours = 1 }: SessionOverviewProps) {
           gap: '1rem'
         }}>
           {sessions.map((session) => {
-            const sessionColor = getSessionColor(session.session_id, allSessionIds)
+            const sessionColor = getSessionColor(session.session_id)
             return (
               <div
                 key={session.session_id}

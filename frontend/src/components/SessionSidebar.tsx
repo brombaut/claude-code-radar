@@ -98,10 +98,6 @@ export function SessionSidebar({ timeframeHours, selectedFilter, onFilterChange 
 
   const appNames = Object.keys(sessionsByApp).sort()
 
-  // Extract all session IDs for color assignment
-  const allSessionIds = appNames.flatMap(appName =>
-    sessionsByApp[appName].map(session => session.session_id)
-  )
 
   return (
     <div style={{
@@ -212,7 +208,7 @@ export function SessionSidebar({ timeframeHours, selectedFilter, onFilterChange 
                 {isExpanded && (
                   <div style={{ marginLeft: '2rem', marginTop: '0.25rem' }}>
                     {[...sessions].sort((a, b) => a.session_id.localeCompare(b.session_id)).map(session => {
-                      const sessionColor = getSessionColor(session.session_id, allSessionIds)
+                      const sessionColor = getSessionColor(session.session_id, appName, appNames)
                       const isSelected = selectedFilter.type === 'session' && selectedFilter.value === session.session_id
 
                       // Show highlight if:

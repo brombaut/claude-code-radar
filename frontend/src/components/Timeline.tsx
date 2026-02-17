@@ -185,6 +185,8 @@ export function Timeline({ events, timeframeHours }: TimelineProps) {
     )
   }
 
+  const allAppNames = Array.from(appGroups.keys())
+
   const timeframeMs = timeframeHours * 60 * 60 * 1000
 
   // Format timeframe label (show minutes if < 1 hour)
@@ -192,8 +194,6 @@ export function Timeline({ events, timeframeHours }: TimelineProps) {
     ? `${Math.round(timeframeHours * 60)}m`
     : `${timeframeHours}h`
 
-  // Extract all session IDs for color assignment
-  const allSessionIds = Array.from(sessionGroups.keys())
 
   return (
     <div style={{
@@ -292,7 +292,7 @@ export function Timeline({ events, timeframeHours }: TimelineProps) {
 
         // Identify paired events
         const eventPairs = identifyEventPairs(filteredSessionEvents)
-        const sessionColor = getSessionColor(sessionId, allSessionIds)
+        const sessionColor = getSessionColor(sessionId, appName, allAppNames)
 
         return (
           <div

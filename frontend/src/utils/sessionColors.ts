@@ -1,94 +1,112 @@
-// Palette of distinct muted base colors
-const SESSION_COLOR_PALETTE = [
-  { name: 'blue', bg: 'rgba(59, 130, 246, 0.15)', border: 'rgba(59, 130, 246, 0.4)' },
-  { name: 'green', bg: 'rgba(34, 197, 94, 0.15)', border: 'rgba(34, 197, 94, 0.4)' },
-  { name: 'purple', bg: 'rgba(168, 85, 247, 0.15)', border: 'rgba(168, 85, 247, 0.4)' },
-  { name: 'orange', bg: 'rgba(249, 115, 22, 0.15)', border: 'rgba(249, 115, 22, 0.4)' },
-  { name: 'red', bg: 'rgba(239, 68, 68, 0.15)', border: 'rgba(239, 68, 68, 0.4)' },
-  { name: 'teal', bg: 'rgba(20, 184, 166, 0.15)', border: 'rgba(20, 184, 166, 0.4)' },
-  { name: 'pink', bg: 'rgba(236, 72, 153, 0.15)', border: 'rgba(236, 72, 153, 0.4)' },
-  { name: 'yellow', bg: 'rgba(234, 179, 8, 0.15)', border: 'rgba(234, 179, 8, 0.4)' },
-  { name: 'indigo', bg: 'rgba(99, 102, 241, 0.15)', border: 'rgba(99, 102, 241, 0.4)' },
-  { name: 'cyan', bg: 'rgba(6, 182, 212, 0.15)', border: 'rgba(6, 182, 212, 0.4)' },
+const COLOR_FAMILIES = [
+  { hueStart: 185, hueEnd: 250 },  // cool: teal → blue → indigo
+  { hueStart: 350, hueEnd: 55 },   // warm: red → orange → yellow (wraps around 0)
+  { hueStart: 265, hueEnd: 340 },  // purple-pink: violet → magenta → pink
+  { hueStart: 85, hueEnd: 175 },   // green: lime → green → teal
 ]
 
-/**
- * Simple hash function to convert string to number
- */
 function hashString(str: string): number {
   let hash = 0
   for (let i = 0; i < str.length; i++) {
     hash = str.charCodeAt(i) + ((hash << 5) - hash)
-    hash = hash & hash // Convert to 32bit integer
+    hash = hash & hash
   }
   return Math.abs(hash)
 }
 
-/**
- * Assign colors to all sessions, ensuring no duplicates.
- * Returns a map of sessionId -> color index.
- */
-function assignSessionColors(sessionIds: string[]): Map<string, number> {
+function assignFamilies(appNames: string[]): Map<string, number> {
   const assignments = new Map<string, number>()
-  const takenIndices = new Set<number>()
+  const taken = new Set<number>()
 
-  // Sort session IDs by their hash to ensure stable assignment order
-  const sortedSessions = [...sessionIds].sort((a, b) => {
-    const hashA = hashString(a)
-    const hashB = hashString(b)
-    return hashA - hashB
-  })
+  const sorted = [...appNames].sort((a, b) => hashString(a) - hashString(b))
 
-  for (const sessionId of sortedSessions) {
-    const hash = hashString(sessionId)
-    const preferredIndex = hash % SESSION_COLOR_PALETTE.length
+  for (const app of sorted) {
+    const preferred = hashString(app) % COLOR_FAMILIES.length
 
-    // Try preferred color first
-    if (!takenIndices.has(preferredIndex)) {
-      assignments.set(sessionId, preferredIndex)
-      takenIndices.add(preferredIndex)
+    if (!taken.has(preferred)) {
+      assignments.set(app, preferred)
+      taken.add(preferred)
       continue
     }
 
-    // Find next available color
     let assigned = false
-    for (let i = 1; i < SESSION_COLOR_PALETTE.length; i++) {
-      const index = (preferredIndex + i) % SESSION_COLOR_PALETTE.length
-      if (!takenIndices.has(index)) {
-        assignments.set(sessionId, index)
-        takenIndices.add(index)
+    for (let i = 1; i < COLOR_FAMILIES.length; i++) {
+      const idx = (preferred + i) % COLOR_FAMILIES.length
+      if (!taken.has(idx)) {
+        assignments.set(app, idx)
+        taken.add(idx)
         assigned = true
         break
       }
     }
 
-    // If all colors taken (10+ sessions), use preferred color anyway
     if (!assigned) {
-      assignments.set(sessionId, preferredIndex)
+      assignments.set(app, preferred)
     }
   }
 
   return assignments
 }
 
-/**
- * Get a consistent color from the palette for a session ID.
- * If other session IDs are provided, will avoid using colors already taken.
- */
+function lerpHue(start: number, end: number, t: number): number {
+  if (start > end) {
+    const range = (360 - start) + end
+    return (start + range * t) % 360
+  }
+  return start + (end - start) * t
+}
+
+function hslToRgb(h: number, s: number, l: number): [number, number, number] {
+  s /= 100
+  l /= 100
+  const c = (1 - Math.abs(2 * l - 1)) * s
+  const x = c * (1 - Math.abs(((h / 60) % 2) - 1))
+  const m = l - c / 2
+
+  let r = 0, g = 0, b = 0
+  if (h < 60) { r = c; g = x; b = 0 }
+  else if (h < 120) { r = x; g = c; b = 0 }
+  else if (h < 180) { r = 0; g = c; b = x }
+  else if (h < 240) { r = 0; g = x; b = c }
+  else if (h < 300) { r = x; g = 0; b = c }
+  else { r = c; g = 0; b = x }
+
+  return [
+    Math.round((r + m) * 255),
+    Math.round((g + m) * 255),
+    Math.round((b + m) * 255),
+  ]
+}
+
+function buildColor(familyIndex: number, sessionId: string): { bg: string; border: string } {
+  const family = COLOR_FAMILIES[familyIndex]
+  const sessionHash = hashString(sessionId)
+  const hueT = (sessionHash % 1000) / 1000
+  const hue = lerpHue(family.hueStart, family.hueEnd, hueT)
+
+  const saturation = 60 + (sessionHash % 30)
+  const lightness = 45 + ((sessionHash >> 8) % 25)
+
+  const [r, g, b] = hslToRgb(hue, saturation, lightness)
+
+  return {
+    bg: `rgba(${r}, ${g}, ${b}, 0.15)`,
+    border: `rgba(${r}, ${g}, ${b}, 0.4)`,
+  }
+}
+
 export function getSessionColor(
   sessionId: string,
-  allSessionIds: string[] = []
+  appName?: string,
+  allAppNames?: string[],
 ): { bg: string; border: string } {
-  // If no other sessions provided, use simple hash-based assignment
-  if (allSessionIds.length === 0) {
-    const hash = hashString(sessionId)
-    const index = hash % SESSION_COLOR_PALETTE.length
-    return SESSION_COLOR_PALETTE[index]
+  if (appName && allAppNames && allAppNames.length > 0) {
+    const families = assignFamilies(allAppNames)
+    const familyIndex = families.get(appName) ?? hashString(appName) % COLOR_FAMILIES.length
+    return buildColor(familyIndex, sessionId)
   }
 
-  // Compute global color assignments
-  const assignments = assignSessionColors(allSessionIds)
-  const colorIndex = assignments.get(sessionId) ?? hashString(sessionId) % SESSION_COLOR_PALETTE.length
-
-  return SESSION_COLOR_PALETTE[colorIndex]
+  const familySource = appName ?? sessionId
+  const familyIndex = hashString(familySource) % COLOR_FAMILIES.length
+  return buildColor(familyIndex, sessionId)
 }

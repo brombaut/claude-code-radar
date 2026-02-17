@@ -77,9 +77,8 @@ export function EventStream({ events, maxEvents = 100 }: EventStreamProps) {
   const scrollRef = useRef<HTMLDivElement>(null)
 
   const eventTypes = Array.from(new Set(events.map(e => e.hook_event_type)))
+  const allAppNames = Array.from(new Set(events.map(e => e.source_app).filter((a): a is string => !!a)))
 
-  // Extract all unique session IDs for color assignment
-  const allSessionIds = Array.from(new Set(events.map(e => e.session_id)))
 
   const filteredEvents = filter === 'all'
     ? events
@@ -205,7 +204,7 @@ export function EventStream({ events, maxEvents = 100 }: EventStreamProps) {
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
             {displayedEvents.map((event) => {
               const eventColor = getEventColor(event.hook_event_type)
-              const sessionColor = getSessionColor(event.session_id, allSessionIds)
+              const sessionColor = getSessionColor(event.session_id, event.source_app, allAppNames)
 
               return (
                 <div
