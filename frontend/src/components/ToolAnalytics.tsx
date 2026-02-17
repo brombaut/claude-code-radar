@@ -10,8 +10,6 @@ export function ToolAnalytics({ timeframeHours = 1, sessionIds }: ToolAnalyticsP
   const [stats, setStats] = useState<ToolStats | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [isCollapsed, setIsCollapsed] = useState(false)
-
   useEffect(() => {
     loadStats()
     const interval = setInterval(loadStats, 30000)
@@ -38,53 +36,7 @@ export function ToolAnalytics({ timeframeHours = 1, sessionIds }: ToolAnalyticsP
   const successRate = totalOutcomes > 0 ? (successCount / totalOutcomes * 100).toFixed(1) : 0
 
   return (
-    <div style={{
-      backgroundColor: 'var(--bg-secondary)',
-      borderRadius: '8px',
-      border: '1px solid var(--border-color)',
-      overflow: 'hidden'
-    }}>
-      {/* Header */}
-      <div
-        onClick={() => setIsCollapsed(!isCollapsed)}
-        style={{
-          padding: '1rem 1.25rem',
-          borderBottom: isCollapsed ? 'none' : '1px solid var(--border-color)',
-          backgroundColor: 'var(--bg-tertiary)',
-          cursor: 'pointer',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '0.75rem',
-          userSelect: 'none'
-        }}
-      >
-        <span style={{ fontSize: '0.875rem', color: 'var(--text-secondary)' }}>
-          {isCollapsed ? '▶' : '▼'}
-        </span>
-        <h2 style={{
-          margin: 0,
-          fontSize: '1.125rem',
-          fontWeight: '600',
-          color: 'var(--text-primary)',
-          flex: 1
-        }}>
-          Tool Analytics
-          {sessionIds && sessionIds.length > 0 && (
-            <span style={{
-              marginLeft: '0.75rem',
-              fontSize: '0.75rem',
-              color: 'var(--text-secondary)',
-              fontWeight: 'normal'
-            }}>
-              (viewing {sessionIds.length} session{sessionIds.length > 1 ? 's' : ''})
-            </span>
-          )}
-        </h2>
-      </div>
-
-      {/* Content */}
-      {!isCollapsed && (
-        <div style={{ padding: '1rem' }}>
+    <div>
 
       {loading && !stats && (
         <div style={{
@@ -291,8 +243,6 @@ export function ToolAnalytics({ timeframeHours = 1, sessionIds }: ToolAnalyticsP
             </div>
           </div>
         </>
-      )}
-      </div>
       )}
     </div>
   )

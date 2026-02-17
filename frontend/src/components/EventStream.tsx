@@ -73,7 +73,6 @@ const EVENT_COLORS: Record<string, string> = {
 export function EventStream({ events, maxEvents = 100 }: EventStreamProps) {
   const [filter, setFilter] = useState<string>('all')
   const [autoScroll, setAutoScroll] = useState(true)
-  const [isCollapsed, setIsCollapsed] = useState(false)
   const scrollRef = useRef<HTMLDivElement>(null)
 
   const eventTypes = Array.from(new Set(events.map(e => e.hook_event_type)))
@@ -111,60 +110,35 @@ export function EventStream({ events, maxEvents = 100 }: EventStreamProps) {
       flexDirection: 'column',
       height: '100%',
       minHeight: '500px',
-      border: '1px solid var(--border-color)',
-      borderRadius: '8px',
       overflow: 'hidden',
-      backgroundColor: 'var(--bg-secondary)'
     }}>
       <div style={{
-        padding: '1.25rem',
-        borderBottom: isCollapsed ? 'none' : '1px solid var(--border-color)',
-        backgroundColor: 'var(--bg-tertiary)',
+        padding: '0.75rem 0',
+        borderBottom: '1px solid var(--border-color)',
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center'
       }}>
-        <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-          <span
-            onClick={() => setIsCollapsed(!isCollapsed)}
-            style={{
-              fontSize: '0.875rem',
-              color: 'var(--text-secondary)',
-              cursor: 'pointer',
-              userSelect: 'none'
-            }}
-          >
-            {isCollapsed ? '▶' : '▼'}
-          </span>
-          <h2 style={{
-            margin: 0,
-            fontSize: '1.125rem',
-            fontWeight: '600',
-            color: 'var(--text-primary)'
-          }}>
-            Event Stream
-          </h2>
-          <select
-            value={filter}
-            onChange={(e) => setFilter(e.target.value)}
-            style={{
-              padding: '0.5rem 0.75rem',
-              borderRadius: '6px',
-              border: '1px solid var(--border-color)',
-              backgroundColor: 'var(--bg-secondary)',
-              color: 'var(--text-primary)',
-              fontSize: '0.875rem',
-              cursor: 'pointer'
-            }}
-          >
-            <option value="all">All Events ({events.length})</option>
-            {eventTypes.map(type => (
-              <option key={type} value={type}>
-                {type} ({events.filter(e => e.hook_event_type === type).length})
-              </option>
-            ))}
-          </select>
-        </div>
+        <select
+          value={filter}
+          onChange={(e) => setFilter(e.target.value)}
+          style={{
+            padding: '0.375rem 0.625rem',
+            borderRadius: '6px',
+            border: '1px solid var(--border-color)',
+            backgroundColor: 'var(--bg-secondary)',
+            color: 'var(--text-primary)',
+            fontSize: '0.875rem',
+            cursor: 'pointer'
+          }}
+        >
+          <option value="all">All Events ({events.length})</option>
+          {eventTypes.map(type => (
+            <option key={type} value={type}>
+              {type} ({events.filter(e => e.hook_event_type === type).length})
+            </option>
+          ))}
+        </select>
         <label style={{
           display: 'flex',
           alignItems: 'center',
@@ -183,15 +157,14 @@ export function EventStream({ events, maxEvents = 100 }: EventStreamProps) {
         </label>
       </div>
 
-      {!isCollapsed && (
-        <div
-          ref={scrollRef}
-          style={{
-            flex: 1,
-            overflow: 'auto',
-            padding: '1rem'
-          }}
-        >
+      <div
+        ref={scrollRef}
+        style={{
+          flex: 1,
+          overflow: 'auto',
+          padding: '1rem 0'
+        }}
+      >
         {displayedEvents.length === 0 ? (
           <div style={{
             padding: '3rem',
@@ -313,7 +286,6 @@ export function EventStream({ events, maxEvents = 100 }: EventStreamProps) {
           </div>
         )}
       </div>
-      )}
     </div>
   )
 }

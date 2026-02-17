@@ -130,7 +130,6 @@ function generateTimeMarkers(timeframeHours: number): Array<{ label: string; per
 
 export function Timeline({ events, timeframeHours, alertingSessionIds }: TimelineProps) {
   const [now, setNow] = useState(Date.now())
-  const [isCollapsed, setIsCollapsed] = useState(false)
 
   // Update 'now' every second to make events flow left
   useEffect(() => {
@@ -177,9 +176,6 @@ export function Timeline({ events, timeframeHours, alertingSessionIds }: Timelin
         padding: '2rem',
         textAlign: 'center',
         color: 'var(--text-secondary)',
-        backgroundColor: 'var(--bg-secondary)',
-        borderRadius: '8px',
-        border: '1px solid var(--border-color)'
       }}>
         No events to display
       </div>
@@ -198,47 +194,11 @@ export function Timeline({ events, timeframeHours, alertingSessionIds }: Timelin
 
   return (
     <div style={{
-      backgroundColor: 'var(--bg-secondary)',
-      borderRadius: '8px',
-      border: '1px solid var(--border-color)',
-      overflow: 'hidden'
+      display: 'flex',
+      flexDirection: 'column',
+      gap: '1.5rem',
     }}>
-      {/* Header */}
-      <div
-        onClick={() => setIsCollapsed(!isCollapsed)}
-        style={{
-          padding: '1rem 1.25rem',
-          borderBottom: isCollapsed ? 'none' : '1px solid var(--border-color)',
-          backgroundColor: 'var(--bg-tertiary)',
-          cursor: 'pointer',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '0.75rem',
-          userSelect: 'none'
-        }}
-      >
-        <span style={{ fontSize: '0.875rem', color: 'var(--text-secondary)' }}>
-          {isCollapsed ? '▶' : '▼'}
-        </span>
-        <h2 style={{
-          margin: 0,
-          fontSize: '1.125rem',
-          fontWeight: '600',
-          color: 'var(--text-primary)'
-        }}>
-          Timeline
-        </h2>
-      </div>
-
-      {/* Content */}
-      {!isCollapsed && (
-        <div style={{
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '1.5rem',
-          padding: '1rem'
-        }}>
-        {Array.from(appGroups.entries())
+      {Array.from(appGroups.entries())
         .filter(([, appSessions]) => {
           return Array.from(appSessions.values()).some(sessionEvents =>
             sessionEvents.some(event => (now - event.timestamp) <= timeframeMs)
@@ -554,8 +514,6 @@ export function Timeline({ events, timeframeHours, alertingSessionIds }: Timelin
             </div>
           </div>
         ))}
-        </div>
-      )}
     </div>
   )
 }
