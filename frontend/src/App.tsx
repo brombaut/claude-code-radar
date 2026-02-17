@@ -183,50 +183,57 @@ function App() {
         {/* Main content area */}
         <div style={{
           flex: 1,
-          overflow: 'auto',
-          padding: '2rem'
+          display: 'flex',
+          flexDirection: 'column',
+          overflow: 'hidden',
         }}>
-          {loading ? (
-            <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              height: '400px',
-              color: 'var(--text-secondary)',
-              fontSize: '1rem'
-            }}>
-              Loading events...
-            </div>
-          ) : (
-            <>
-              <TabBar
-                tabs={[
-                  { key: 'timeline', label: 'Timeline' },
-                  { key: 'analytics', label: 'Analytics' },
-                ]}
-                activeTab={activeTab}
-                onTabChange={setActiveTab}
-              />
+          <TabBar
+            tabs={[
+              { key: 'timeline', label: 'Timeline' },
+              { key: 'analytics', label: 'Analytics' },
+            ]}
+            activeTab={activeTab}
+            onTabChange={setActiveTab}
+          />
 
-              {activeTab === 'timeline' && (
-                <>
-                  <div style={{ marginBottom: '2rem' }}>
-                    <Timeline events={filteredEvents} timeframeHours={timeframeHours} alertingSessionIds={alertingSessionIds} />
-                  </div>
-                  <div style={{ minHeight: '400px' }}>
-                    <EventStream events={filteredEvents} />
-                  </div>
-                </>
-              )}
+          <div style={{
+            flex: 1,
+            overflow: 'auto',
+            padding: '2rem',
+          }}>
+            {loading ? (
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                height: '400px',
+                color: 'var(--text-secondary)',
+                fontSize: '1rem'
+              }}>
+                Loading events...
+              </div>
+            ) : (
+              <>
+                {activeTab === 'timeline' && (
+                  <>
+                    <div style={{ marginBottom: '2rem' }}>
+                      <Timeline events={filteredEvents} timeframeHours={timeframeHours} alertingSessionIds={alertingSessionIds} />
+                    </div>
+                    <div style={{ minHeight: '400px' }}>
+                      <EventStream events={filteredEvents} />
+                    </div>
+                  </>
+                )}
 
-              {activeTab === 'analytics' && (
-                <ToolAnalytics
-                  timeframeHours={timeframeHours}
-                  sessionIds={selectedSessionIds}
-                />
-              )}
-            </>
-          )}
+                {activeTab === 'analytics' && (
+                  <ToolAnalytics
+                    timeframeHours={timeframeHours}
+                    sessionIds={selectedSessionIds}
+                  />
+                )}
+              </>
+            )}
+          </div>
         </div>
       </div>
     </div>

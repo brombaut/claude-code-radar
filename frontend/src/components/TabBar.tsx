@@ -13,9 +13,7 @@ export function TabBar({ tabs, activeTab, onTabChange }: TabBarProps) {
   return (
     <div style={{
       display: 'flex',
-      gap: '0',
-      borderBottom: '2px solid var(--border-color)',
-      marginBottom: '1.5rem',
+      backgroundColor: 'var(--bg-tertiary)',
     }}>
       {tabs.map(tab => {
         const isActive = tab.key === activeTab
@@ -24,16 +22,15 @@ export function TabBar({ tabs, activeTab, onTabChange }: TabBarProps) {
             key={tab.key}
             onClick={() => onTabChange(tab.key)}
             style={{
-              padding: '0.625rem 1.25rem',
-              fontSize: '0.9rem',
+              padding: '0.6rem 1.5rem',
+              fontSize: '0.875rem',
               fontWeight: isActive ? 600 : 400,
-              color: isActive ? 'var(--accent-blue)' : 'var(--text-secondary)',
-              backgroundColor: 'transparent',
+              color: isActive ? 'var(--text-primary)' : 'var(--text-secondary)',
+              backgroundColor: isActive ? 'var(--bg-primary)' : 'transparent',
               border: 'none',
-              borderBottom: isActive ? '2px solid var(--accent-blue)' : '2px solid transparent',
-              marginBottom: '-2px',
+              borderRadius: 0,
               cursor: 'pointer',
-              transition: 'color 0.15s, border-color 0.15s',
+              transition: 'color 0.15s, background-color 0.15s',
             }}
           >
             {tab.label}
