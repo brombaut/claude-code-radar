@@ -150,6 +150,13 @@ def main():
         # Also set model_name from assistant message if not already set
         if not model_name and assistant_msg.get('model'):
             event_data['model_name'] = assistant_msg['model']
+
+    # token_usage: TokenUsage
+    if 'token_usage' in input_data:
+        token_usage = input_data['token_usage']
+        event_data['token_usage'] = token_usage
+        if not model_name and token_usage.get('model'):
+            event_data['model_name'] = token_usage['model']
     
     # Handle --add-chat option
     if args.add_chat and 'transcript_path' in input_data:

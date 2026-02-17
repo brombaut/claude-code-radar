@@ -20,6 +20,11 @@ from utils.assistant_extractor import (
     get_last_processed_uuid,
     update_last_processed_uuid
 )
+from utils.token_extractor import (
+    get_token_usage,
+    get_last_processed_request_id,
+    update_last_processed_request_id
+)
 
 try:
     from dotenv import load_dotenv
@@ -270,6 +275,42 @@ def main():
                     # Update last processed UUID
                     if new_messages:
                         update_last_processed_uuid(log_dir, new_messages[-1]['uuid'])
+
+            except Exception:
+                pass
+
+            try:
+                last_request_id = get_last_processed_request_id(log_dir)
+                new_usage = get_token_usage(transcript_path, last_request_id)
+
+                if new_usage:
+                    script_dir = Path(__file__).parent
+                    send_event_script = script_dir / 'send_event.py'
+
+                    for usage in new_usage:
+                        event_payload = {
+                            'session_id': session_id,
+                            'transcript_path': transcript_path,
+                            'hook_event_name': 'TokenUsage',
+                            'token_usage': usage
+                        }
+
+                        try:
+                            subprocess.run(
+                                [
+                                    'uv', 'run', str(send_event_script),
+                                    '--source-app', 'claude-code-observability',
+                                    '--event-type', 'TokenUsage'
+                                ],
+                                input=json.dumps(event_payload),
+                                capture_output=True,
+                                text=True,
+                                timeout=2
+                            )
+                        except Exception:
+                            pass
+
+                    update_last_processed_request_id(log_dir, new_usage[-1]['request_id'])
 
             except Exception:
                 pass
