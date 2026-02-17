@@ -6,7 +6,7 @@ interface ToolAnalyticsProps {
   sessionIds?: string[]
 }
 
-export function ToolAnalytics({ timeframeHours = 1, sessionIds }: ToolAnalyticsProps) {
+export function ToolAnalytics({ timeframeHours = 1 }: ToolAnalyticsProps) {
   const [stats, setStats] = useState<ToolStats | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
