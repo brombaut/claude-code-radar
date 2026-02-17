@@ -5,6 +5,7 @@ import { getSessionColor } from '../utils/sessionColors'
 interface TimelineProps {
   events: ClaudeEvent[]
   timeframeHours: number
+  alertingSessionIds: Set<string>
 }
 
 const EVENT_EMOJIS: Record<string, string> = {
@@ -127,7 +128,7 @@ function generateTimeMarkers(timeframeHours: number): Array<{ label: string; per
   return markers
 }
 
-export function Timeline({ events, timeframeHours }: TimelineProps) {
+export function Timeline({ events, timeframeHours, alertingSessionIds }: TimelineProps) {
   const [now, setNow] = useState(Date.now())
   const [isCollapsed, setIsCollapsed] = useState(false)
 
@@ -294,16 +295,21 @@ export function Timeline({ events, timeframeHours }: TimelineProps) {
         const eventPairs = identifyEventPairs(filteredSessionEvents)
         const sessionColor = getSessionColor(sessionId, appName, allAppNames)
 
+        const isAlerting = alertingSessionIds.has(sessionId)
+
         return (
           <div
             key={sessionId}
+            className={isAlerting ? 'session-flash' : undefined}
             style={{
               backgroundColor: sessionColor.bg,
               borderRadius: '8px',
               border: `1px solid ${sessionColor.border}`,
               padding: '0.75rem',
-              position: 'relative'
-            }}
+              position: 'relative',
+              '--flash-color': sessionColor.border,
+              '--flash-bg': sessionColor.bg
+            } as React.CSSProperties}
           >
             {/* Session header */}
             <div style={{

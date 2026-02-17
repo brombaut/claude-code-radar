@@ -10,9 +10,10 @@ interface SessionSidebarProps {
   timeframeHours: number
   selectedFilter: { type: 'all' | 'project' | 'session'; value: string }
   onFilterChange: (filter: { type: 'all' | 'project' | 'session'; value: string }) => void
+  alertingSessionIds: Set<string>
 }
 
-export function SessionSidebar({ timeframeHours, selectedFilter, onFilterChange }: SessionSidebarProps) {
+export function SessionSidebar({ timeframeHours, selectedFilter, onFilterChange, alertingSessionIds }: SessionSidebarProps) {
   const [sessionsByApp, setSessionsByApp] = useState<SessionsByApp>({})
   const [expandedApps, setExpandedApps] = useState<Set<string>>(new Set())
   const [loading, setLoading] = useState(true)
@@ -220,9 +221,12 @@ export function SessionSidebar({ timeframeHours, selectedFilter, onFilterChange 
                         selectedFilter.type === 'all' ||
                         (selectedFilter.type === 'project' && selectedFilter.value === appName)
 
+                      const isAlerting = alertingSessionIds.has(session.session_id)
+
                       return (
                         <div
                           key={session.session_id}
+                          className={isAlerting ? 'session-flash' : undefined}
                           onClick={() => onFilterChange({ type: 'session', value: session.session_id })}
                           style={{
                             padding: '0.5rem 0.75rem',
@@ -232,8 +236,10 @@ export function SessionSidebar({ timeframeHours, selectedFilter, onFilterChange 
                             cursor: 'pointer',
                             fontSize: '0.75rem',
                             transition: 'all 0.2s',
-                            border: shouldHighlight ? `1px solid ${sessionColor.border}` : '1px solid transparent'
-                          }}
+                            border: shouldHighlight ? `1px solid ${sessionColor.border}` : '1px solid transparent',
+                            '--flash-color': sessionColor.border,
+                            '--flash-bg': shouldHighlight ? sessionColor.bg : 'transparent'
+                          } as React.CSSProperties}
                         >
                           <div style={{
                             fontFamily: 'monospace',

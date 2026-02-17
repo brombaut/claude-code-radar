@@ -88,3 +88,12 @@ button:focus-visible {
   outline: 2px solid var(--accent-blue);
   outline-offset: 2px;
 }
+
+@keyframes flash {
+  0%, 100% { background-color: var(--flash-bg, transparent); }
+  50% { background-color: color-mix(in srgb, var(--flash-color, var(--accent-orange)) 40%, var(--flash-bg, transparent)); }
+}
+
+.session-flash {
+  animation: flash 1.2s ease-in-out infinite;
+}

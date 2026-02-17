@@ -15,6 +15,28 @@ function App() {
 
   const { events, connected, loading } = useEventStream(timeframeHours)
 
+  const alertingSessionIds = useMemo(() => {
+    const cutoff = Date.now() - 180_000
+    const latestAlert = new Map<string, number>()
+    const latestPrompt = new Map<string, number>()
+    for (const e of events) {
+      if ((e.hook_event_type === 'Notification' || e.hook_event_type === 'Stop' || e.hook_event_type === 'SubagentStop') && e.timestamp >= cutoff) {
+        const prev = latestAlert.get(e.session_id) ?? 0
+        if (e.timestamp > prev) latestAlert.set(e.session_id, e.timestamp)
+      }
+      if (e.hook_event_type === 'UserPromptSubmit') {
+        const prev = latestPrompt.get(e.session_id) ?? 0
+        if (e.timestamp > prev) latestPrompt.set(e.session_id, e.timestamp)
+      }
+    }
+    const ids = new Set<string>()
+    for (const [sessionId, alertTime] of latestAlert) {
+      const promptTime = latestPrompt.get(sessionId) ?? 0
+      if (alertTime > promptTime) ids.add(sessionId)
+    }
+    return ids
+  }, [events])
+
   // Filter events based on selection
   const filteredEvents = useMemo(() => {
     if (selectedFilter.type === 'all') {
@@ -153,6 +175,7 @@ function App() {
           timeframeHours={timeframeHours}
           selectedFilter={selectedFilter}
           onFilterChange={setSelectedFilter}
+          alertingSessionIds={alertingSessionIds}
         />
 
         {/* Main content area */}
@@ -182,7 +205,7 @@ function App() {
               </div>
 
               <div style={{ marginBottom: '2rem' }}>
-                <Timeline events={filteredEvents} timeframeHours={timeframeHours} />
+                <Timeline events={filteredEvents} timeframeHours={timeframeHours} alertingSessionIds={alertingSessionIds} />
               </div>
 
               <div style={{ minHeight: '400px' }}>
