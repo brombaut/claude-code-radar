@@ -60,3 +60,34 @@ export async function fetchToolStats(hours: number = 1): Promise<ToolStats> {
   }
   return response.json()
 }
+
+export interface TokenStats {
+  totals: {
+    input_tokens: number
+    output_tokens: number
+    cache_read_tokens: number
+    cache_creation_tokens: number
+    request_count: number
+  }
+  by_session: Array<{
+    session_id: string
+    input_tokens: number
+    output_tokens: number
+    cache_read_tokens: number
+    cache_creation_tokens: number
+    request_count: number
+  }>
+  time_series: Array<{
+    hour_bucket: number
+    input_tokens: number
+    output_tokens: number
+  }>
+}
+
+export async function fetchTokenStats(hours: number = 1): Promise<TokenStats> {
+  const response = await fetch(`${API_BASE_URL}/api/tokens/stats?hours=${hours}`)
+  if (!response.ok) {
+    throw new Error(`Failed to fetch token stats: ${response.statusText}`)
+  }
+  return response.json()
+}
