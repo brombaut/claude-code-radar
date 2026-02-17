@@ -45,7 +45,12 @@ Examples:
         help='Backend server URL for event submission (default: http://localhost:8000/events)'
     )
 
-    return parser.parse_args()
+    args = parser.parse_args()
+
+    if not args.source_app or not args.source_app.strip():
+        parser.error("--source-app cannot be empty")
+
+    return args
 
 
 def validate_ccr_project():
