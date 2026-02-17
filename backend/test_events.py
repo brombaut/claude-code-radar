@@ -223,6 +223,31 @@ def generate_session_events(session_id: str) -> list:
             }
         ))
 
+    # TokenUsage events (2-4 per session, simulating per-API-call token tracking)
+    for _ in range(random.randint(2, 4)):
+        input_tok = random.randint(2000, 80000)
+        output_tok = random.randint(200, 4000)
+        cache_read = random.randint(0, 60000)
+        cache_create = random.randint(0, 5000)
+        events.append(create_event(
+            session_id=session_id,
+            hook_event_type="TokenUsage",
+            payload_extra={
+                "hook_event_name": "TokenUsage",
+                "token_usage": {
+                    "request_id": f"req_{uuid.uuid4().hex[:24]}",
+                    "model": random.choice(["claude-opus-4-6", "claude-sonnet-4-5-20250929"]),
+                    "timestamp": time.strftime("%Y-%m-%dT%H:%M:%S.000Z", time.gmtime()),
+                    "input_tokens": input_tok,
+                    "output_tokens": output_tok,
+                    "cache_creation_input_tokens": cache_create,
+                    "cache_read_input_tokens": cache_read,
+                    "cache_creation_1h_tokens": cache_create,
+                    "cache_creation_5m_tokens": 0,
+                }
+            }
+        ))
+
     # SessionEnd (80% chance for normal completion)
     if random.random() < 0.8:
         events.append(create_event(
