@@ -159,6 +159,7 @@ def get_token_stats(hours: float = 1) -> dict:
                 COALESCE(SUM(json_extract(payload, '$.token_usage.input_tokens')), 0)            AS input_tokens,
                 COALESCE(SUM(json_extract(payload, '$.token_usage.output_tokens')), 0)           AS output_tokens,
                 COALESCE(SUM(json_extract(payload, '$.token_usage.cache_read_input_tokens')), 0) AS cache_read_tokens,
+                COALESCE(SUM(json_extract(payload, '$.token_usage.cache_creation_input_tokens')), 0) AS cache_creation_tokens,
                 COUNT(*) AS request_count
             FROM events
             WHERE timestamp > ? AND hook_event_type = 'TokenUsage'
