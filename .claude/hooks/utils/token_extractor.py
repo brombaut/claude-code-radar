@@ -49,7 +49,7 @@ def get_token_usage(
                 if entry.get('type') != 'assistant':
                     continue
 
-                request_id = entry.get('requestId')
+                request_id = entry.get('requestId') or entry.get('message', {}).get('id')
                 if not request_id:
                     continue
 
