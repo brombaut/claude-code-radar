@@ -2,6 +2,22 @@ import { useEffect, useState } from 'react'
 import { getActiveSessions, getEvents, type Session } from '../api/client'
 import { getSessionColor } from '../utils/sessionColors'
 
+const EVENT_EMOJIS: Record<string, string> = {
+  'SessionStart': '🚀',
+  'SessionEnd': '🛑',
+  'Stop': '⏹️',
+  'UserPromptSubmit': '💬',
+  'AssistantMessage': '🤖',
+  'PreToolUse': '🔧',
+  'PostToolUse': '✅',
+  'PostToolUseFailure': '❌',
+  'PermissionRequest': '🔐',
+  'Notification': '🔔',
+  'SubagentStart': '🌱',
+  'SubagentStop': '🔚',
+  'PreCompact': '🗜️',
+}
+
 interface SessionsByApp {
   [appName: string]: Session[]
 }
@@ -15,6 +31,7 @@ interface SessionSidebarProps {
 
 export function SessionSidebar({ timeframeHours, selectedFilter, onFilterChange, alertingSessionIds }: SessionSidebarProps) {
   const [sessionsByApp, setSessionsByApp] = useState<SessionsByApp>({})
+  const [lastEventTypes, setLastEventTypes] = useState<Record<string, string>>({})
   const [expandedApps, setExpandedApps] = useState<Set<string>>(new Set())
   const [loading, setLoading] = useState(true)
 
@@ -26,6 +43,7 @@ export function SessionSidebar({ timeframeHours, selectedFilter, onFilterChange,
 
         // Get events for each session to extract app info
         const appMap: SessionsByApp = {}
+        const eventTypeMap: Record<string, string> = {}
 
         for (const session of sessionsResponse.sessions) {
           try {
@@ -36,6 +54,10 @@ export function SessionSidebar({ timeframeHours, selectedFilter, onFilterChange,
             let appName = 'Unknown App'
             if (event?.source_app) {
               appName = event.source_app
+            }
+
+            if (event?.hook_event_type) {
+              eventTypeMap[session.session_id] = event.hook_event_type
             }
 
             if (!appMap[appName]) {
@@ -52,6 +74,7 @@ export function SessionSidebar({ timeframeHours, selectedFilter, onFilterChange,
         }
 
         setSessionsByApp(appMap)
+        setLastEventTypes(eventTypeMap)
 
         // Auto-expand all apps initially
         setExpandedApps(new Set(Object.keys(appMap)))
@@ -242,14 +265,27 @@ export function SessionSidebar({ timeframeHours, selectedFilter, onFilterChange,
                           } as React.CSSProperties}
                         >
                           <div style={{
-                            fontFamily: 'monospace',
-                            color: 'var(--text-primary)',
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
                             marginBottom: '0.25rem',
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis',
-                            whiteSpace: 'nowrap'
+                            gap: '0.5rem',
                           }}>
-                            {session.session_id}
+                            <span style={{
+                              fontFamily: 'monospace',
+                              color: 'var(--text-primary)',
+                              overflow: 'hidden',
+                              textOverflow: 'ellipsis',
+                              whiteSpace: 'nowrap',
+                              minWidth: 0,
+                            }}>
+                              {session.session_id}
+                            </span>
+                            {lastEventTypes[session.session_id] && (
+                              <span style={{ fontSize: '1rem', flexShrink: 0 }} title={lastEventTypes[session.session_id]}>
+                                {EVENT_EMOJIS[lastEventTypes[session.session_id]] || '📌'}
+                              </span>
+                            )}
                           </div>
                           <div style={{
                             display: 'flex',

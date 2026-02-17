@@ -276,46 +276,67 @@ export function Timeline({ events, timeframeHours, alertingSessionIds }: Timelin
             } as React.CSSProperties}
           >
             {/* Session header */}
-            <div style={{
-              marginBottom: '0.75rem',
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              gap: '1rem'
-            }}>
-              <div style={{
-                display: 'flex',
-                alignItems: 'baseline',
-                gap: '0.5rem',
-                flex: 1,
-                minWidth: 0
-              }}>
-                <span style={{
-                  fontSize: '0.7rem',
-                  color: 'var(--text-secondary)',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.05em',
-                  flexShrink: 0
+            {(() => {
+              const lastEvent = filteredSessionEvents.reduce((latest, e) =>
+                e.timestamp > latest.timestamp ? e : latest
+              )
+              const lastEventEmoji = EVENT_EMOJIS[lastEvent.hook_event_type] || '📌'
+              return (
+                <div style={{
+                  marginBottom: '0.75rem',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  gap: '1rem'
                 }}>
-                  Session
-                </span>
-                <span style={{
-                  fontFamily: 'monospace',
-                  fontSize: '0.8rem',
-                  color: 'var(--text-primary)'
-                }}>
-                  {sessionId}
-                </span>
-              </div>
-              <div style={{
-                fontSize: '0.7rem',
-                color: 'var(--text-secondary)',
-                whiteSpace: 'nowrap',
-                flexShrink: 0
-              }}>
-                {filteredSessionEvents.length} events • {timeframeLabel}
-              </div>
-            </div>
+                  <div style={{
+                    display: 'flex',
+                    alignItems: 'baseline',
+                    gap: '0.5rem',
+                    flex: 1,
+                    minWidth: 0
+                  }}>
+                    <span style={{
+                      fontSize: '0.7rem',
+                      color: 'var(--text-secondary)',
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.05em',
+                      flexShrink: 0
+                    }}>
+                      Session
+                    </span>
+                    <span style={{
+                      fontFamily: 'monospace',
+                      fontSize: '0.8rem',
+                      color: 'var(--text-primary)'
+                    }}>
+                      {sessionId}
+                    </span>
+                  </div>
+                  <div style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.75rem',
+                    flexShrink: 0
+                  }}>
+                    <span style={{
+                      fontSize: '0.7rem',
+                      color: 'var(--text-secondary)',
+                      whiteSpace: 'nowrap',
+                    }}>
+                      {filteredSessionEvents.length} events • {timeframeLabel}
+                    </span>
+                    <span style={{
+                      fontSize: '0.75rem',
+                      color: 'var(--text-secondary)',
+                      whiteSpace: 'nowrap',
+                    }}>
+                      {lastEventEmoji} {lastEvent.hook_event_type}
+                    </span>
+                  </div>
+                </div>
+              )
+            })()}
 
             {/* Horizontal scrolling timeline */}
             <div style={{
