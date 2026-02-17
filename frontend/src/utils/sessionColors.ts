@@ -14,39 +14,6 @@ function hashString(str: string): number {
   return Math.abs(hash)
 }
 
-function assignFamilies(appNames: string[]): Map<string, number> {
-  const assignments = new Map<string, number>()
-  const taken = new Set<number>()
-
-  const sorted = [...appNames].sort((a, b) => hashString(a) - hashString(b))
-
-  for (const app of sorted) {
-    const preferred = hashString(app) % COLOR_FAMILIES.length
-
-    if (!taken.has(preferred)) {
-      assignments.set(app, preferred)
-      taken.add(preferred)
-      continue
-    }
-
-    let assigned = false
-    for (let i = 1; i < COLOR_FAMILIES.length; i++) {
-      const idx = (preferred + i) % COLOR_FAMILIES.length
-      if (!taken.has(idx)) {
-        assignments.set(app, idx)
-        taken.add(idx)
-        assigned = true
-        break
-      }
-    }
-
-    if (!assigned) {
-      assignments.set(app, preferred)
-    }
-  }
-
-  return assignments
-}
 
 function lerpHue(start: number, end: number, t: number): number {
   if (start > end) {
@@ -95,18 +62,7 @@ function buildColor(familyIndex: number, sessionId: string): { bg: string; borde
   }
 }
 
-export function getSessionColor(
-  sessionId: string,
-  appName?: string,
-  allAppNames?: string[],
-): { bg: string; border: string } {
-  if (appName && allAppNames && allAppNames.length > 0) {
-    const families = assignFamilies(allAppNames)
-    const familyIndex = families.get(appName) ?? hashString(appName) % COLOR_FAMILIES.length
-    return buildColor(familyIndex, sessionId)
-  }
-
-  const familySource = appName ?? sessionId
-  const familyIndex = hashString(familySource) % COLOR_FAMILIES.length
+export function getSessionColor(sessionId: string): { bg: string; border: string } {
+  const familyIndex = hashString(sessionId) % COLOR_FAMILIES.length
   return buildColor(familyIndex, sessionId)
 }

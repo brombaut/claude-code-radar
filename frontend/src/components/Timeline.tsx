@@ -182,9 +182,7 @@ export function Timeline({ events, timeframeHours, alertingSessionIds }: Timelin
     )
   }
 
-  const allAppNames = Array.from(appGroups.keys())
-
-  const timeframeMs = timeframeHours * 60 * 60 * 1000
+const timeframeMs = timeframeHours * 60 * 60 * 1000
 
   // Format timeframe label (show minutes if < 1 hour)
   const timeframeLabel = timeframeHours < 1
@@ -257,7 +255,7 @@ export function Timeline({ events, timeframeHours, alertingSessionIds }: Timelin
 
         // Identify paired events
         const eventPairs = identifyEventPairs(filteredSessionEvents)
-        const sessionColor = getSessionColor(sessionId, appName, allAppNames)
+        const sessionColor = getSessionColor(sessionId)
 
         const isAlerting = alertingSessionIds.has(sessionId)
 
