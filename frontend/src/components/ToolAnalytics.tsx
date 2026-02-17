@@ -41,8 +41,8 @@ export function ToolAnalytics({ timeframeHours = 1 }: ToolAnalyticsProps) {
   const totalOutcomes = successCount + failureCount
   const successRate = totalOutcomes > 0 ? (successCount / totalOutcomes * 100).toFixed(1) : 0
   const totals = tokenStats?.totals
-  const cacheHitRate = totals && (totals.input_tokens + totals.cache_read_tokens) > 0
-    ? (totals.cache_read_tokens / (totals.input_tokens + totals.cache_read_tokens) * 100).toFixed(1)
+  const cacheHitRate = totals && (totals.input_tokens + totals.cache_read_tokens + totals.cache_creation_tokens) > 0
+    ? (totals.cache_read_tokens / (totals.input_tokens + totals.cache_read_tokens + totals.cache_creation_tokens) * 100).toFixed(1)
     : '0.0'
 
   return (
