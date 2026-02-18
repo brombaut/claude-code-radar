@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { type ToolStats, fetchToolStats, type TokenStats, fetchTokenStats, type SessionTokenSeries, fetchTokenSeries } from '../api/client'
 
-const CHART_PX = 28
+const CHART_PX = 120
 
 function fmtTokens(n: number) {
   if (n >= 100000) return `${Math.round(n / 1000)}k`
