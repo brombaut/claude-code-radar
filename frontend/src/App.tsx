@@ -1,6 +1,5 @@
 import { useState, useMemo } from 'react'
 import { useEventStream } from './hooks/useEventStream'
-import { EventStream } from './components/EventStream'
 import { SessionSidebar } from './components/SessionSidebar'
 import { ToolAnalytics } from './components/ToolAnalytics'
 import { Timeline } from './components/Timeline'
@@ -215,14 +214,9 @@ function App() {
             ) : (
               <>
                 {activeTab === 'timeline' && (
-                  <>
-                    <div style={{ marginBottom: '2rem' }}>
-                      <Timeline events={filteredEvents} timeframeHours={timeframeHours} alertingSessionIds={alertingSessionIds} />
-                    </div>
-                    <div style={{ minHeight: '400px' }}>
-                      <EventStream events={filteredEvents} />
-                    </div>
-                  </>
+                  <div style={{ marginBottom: '2rem' }}>
+                    <Timeline events={filteredEvents} timeframeHours={timeframeHours} alertingSessionIds={alertingSessionIds} />
+                  </div>
                 )}
 
                 {activeTab === 'analytics' && (

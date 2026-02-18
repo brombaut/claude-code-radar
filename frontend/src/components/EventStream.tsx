@@ -109,7 +109,6 @@ export function EventStream({ events, maxEvents = 100 }: EventStreamProps) {
       display: 'flex',
       flexDirection: 'column',
       height: '100%',
-      minHeight: '500px',
       overflow: 'hidden',
     }}>
       <div style={{
@@ -139,22 +138,45 @@ export function EventStream({ events, maxEvents = 100 }: EventStreamProps) {
             </option>
           ))}
         </select>
-        <label style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '0.5rem',
-          fontSize: '0.875rem',
-          color: 'var(--text-secondary)',
-          cursor: 'pointer'
-        }}>
-          <input
-            type="checkbox"
-            checked={autoScroll}
-            onChange={(e) => setAutoScroll(e.target.checked)}
-            style={{ cursor: 'pointer' }}
-          />
-          Auto-scroll
-        </label>
+        <div
+          onClick={() => setAutoScroll(v => !v)}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.5rem',
+            cursor: 'pointer',
+            userSelect: 'none',
+          }}
+        >
+          <span style={{
+            fontSize: '0.8rem',
+            color: autoScroll ? 'var(--text-primary)' : 'var(--text-secondary)',
+            transition: 'color 0.2s',
+          }}>
+            Auto-scroll
+          </span>
+          <div style={{
+            width: '32px',
+            height: '18px',
+            borderRadius: '9px',
+            backgroundColor: autoScroll ? 'var(--accent-blue)' : 'var(--bg-tertiary)',
+            border: `1px solid ${autoScroll ? 'var(--accent-blue)' : 'var(--border-color)'}`,
+            position: 'relative',
+            transition: 'background-color 0.2s, border-color 0.2s',
+            flexShrink: 0,
+          }}>
+            <div style={{
+              width: '12px',
+              height: '12px',
+              borderRadius: '50%',
+              backgroundColor: 'white',
+              position: 'absolute',
+              top: '2px',
+              left: autoScroll ? '16px' : '2px',
+              transition: 'left 0.2s',
+            }} />
+          </div>
+        </div>
       </div>
 
       <div

@@ -1,5 +1,6 @@
 import { useMemo, useState, useEffect } from 'react'
 import type { ClaudeEvent } from '../hooks/useEventStream'
+import { EventStream } from './EventStream'
 import { getSessionColor } from '../utils/sessionColors'
 
 interface TimelineProps {
@@ -130,6 +131,19 @@ function generateTimeMarkers(timeframeHours: number): Array<{ label: string; per
 
 export function Timeline({ events, timeframeHours, alertingSessionIds }: TimelineProps) {
   const [now, setNow] = useState(Date.now())
+  const [expandedSessions, setExpandedSessions] = useState<Set<string>>(new Set())
+
+  const toggleSessionDrawer = (sessionId: string) => {
+    setExpandedSessions(prev => {
+      const next = new Set(prev)
+      if (next.has(sessionId)) {
+        next.delete(sessionId)
+      } else {
+        next.add(sessionId)
+      }
+      return next
+    })
+  }
 
   // Update 'now' every second to make events flow left
   useEffect(() => {
@@ -262,17 +276,23 @@ const timeframeMs = timeframeHours * 60 * 60 * 1000
         return (
           <div
             key={sessionId}
-            className={isAlerting ? 'session-flash' : undefined}
             style={{
-              backgroundColor: sessionColor.bg,
               borderRadius: '8px',
               border: `1px solid ${sessionColor.border}`,
-              padding: '0.75rem',
+              overflow: 'hidden',
               position: 'relative',
-              '--flash-color': sessionColor.border,
-              '--flash-bg': sessionColor.bg
-            } as React.CSSProperties}
+            }}
           >
+            {/* Flashing area: header + timeline only */}
+            <div
+              className={isAlerting ? 'session-flash' : undefined}
+              style={{
+                backgroundColor: sessionColor.bg,
+                padding: '0.75rem',
+                '--flash-color': sessionColor.border,
+                '--flash-bg': sessionColor.bg,
+              } as React.CSSProperties}
+            >
             {/* Session header */}
             {(() => {
               const lastEvent = filteredSessionEvents.reduce((latest, e) =>
@@ -330,6 +350,25 @@ const timeframeMs = timeframeHours * 60 * 60 * 1000
                       whiteSpace: 'nowrap',
                     }}>
                       {lastEventEmoji} {lastEvent.hook_event_type}
+                    </span>
+                    <span
+                      onClick={() => toggleSessionDrawer(sessionId)}
+                      style={{
+                        fontSize: '0.75rem',
+                        color: expandedSessions.has(sessionId) ? 'var(--accent-blue)' : 'var(--text-primary)',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0.3rem',
+                        whiteSpace: 'nowrap',
+                        padding: '0.2rem 0.5rem',
+                        borderRadius: '4px',
+                        border: `1px solid ${expandedSessions.has(sessionId) ? 'var(--accent-blue)' : 'var(--border-color)'}`,
+                        backgroundColor: expandedSessions.has(sessionId) ? 'rgba(88, 166, 255, 0.1)' : 'transparent',
+                        userSelect: 'none',
+                      }}
+                    >
+                      {expandedSessions.has(sessionId) ? '▼' : '▶'} Events
                     </span>
                   </div>
                 </div>
@@ -527,6 +566,20 @@ const timeframeMs = timeframeHours * 60 * 60 * 1000
                 })}
               </div>
             </div>
+
+            </div>{/* end flashing area */}
+
+            {expandedSessions.has(sessionId) && (
+              <div style={{
+                borderTop: '1px solid var(--border-color)',
+                padding: '0.75rem',
+                backgroundColor: sessionColor.bg,
+              }}>
+                <div style={{ height: '350px' }}>
+                  <EventStream events={events.filter(e => e.session_id === sessionId)} />
+                </div>
+              </div>
+            )}
           </div>
         )
       })}
