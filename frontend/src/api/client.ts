@@ -93,3 +93,34 @@ export async function fetchTokenStats(hours: number = 1): Promise<TokenStats> {
   }
   return response.json()
 }
+
+export interface TokenSeriesPoint {
+  minute: number
+  input_tokens: number
+  output_tokens: number
+  cache_read_tokens: number
+}
+
+export interface SessionTokenSeries {
+  session_id: string
+  total_input: number
+  total_output: number
+  series: TokenSeriesPoint[]
+}
+
+export interface TokenSeriesResponse {
+  sessions: SessionTokenSeries[]
+}
+
+export async function fetchTokenSeries(
+  hours: number,
+  sessionId?: string
+): Promise<TokenSeriesResponse> {
+  const params = new URLSearchParams({ hours: hours.toString() })
+  if (sessionId) params.append('session_id', sessionId)
+  const response = await fetch(`${API_BASE_URL}/api/tokens/sessions?${params}`)
+  if (!response.ok) {
+    throw new Error(`Failed to fetch token series: ${response.statusText}`)
+  }
+  return response.json()
+}
