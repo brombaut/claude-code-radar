@@ -1,11 +1,25 @@
 import { useState, useEffect } from 'react'
 import { type ToolStats, fetchToolStats, type TokenStats, fetchTokenStats, type SessionTokenSeries, fetchTokenSeries } from '../api/client'
 
+const CHART_PX = 28
+
+function fmtTokens(n: number) {
+  if (n >= 100000) return `${Math.round(n / 1000)}k`
+  if (n >= 1000) return `${(n / 1000).toFixed(1)}k`
+  return String(n)
+}
+
+function fmtAgo(ms: number) {
+  const m = Math.round((Date.now() - ms) / 60000)
+  return m < 1 ? 'now' : `${m}m`
+}
+
 function SessionTokenChart({ data, mini = false }: { data: SessionTokenSeries; mini?: boolean }) {
   const { session_id, total_input, total_output, series } = data
-  const chartH = mini ? 12 : 20
   const maxVal = Math.max(...series.map(d => d.input_tokens + d.output_tokens), 1)
   const barW = mini ? 4 : Math.max(4, Math.floor(480 / Math.max(series.length, 1)) - 2)
+  const firstMin = series[0]?.minute
+  const lastMin = series[series.length - 1]?.minute
 
   return (
     <div style={{
@@ -20,11 +34,7 @@ function SessionTokenChart({ data, mini = false }: { data: SessionTokenSeries; m
         alignItems: 'baseline',
         marginBottom: '0.2rem',
       }}>
-        <span style={{
-          fontFamily: 'monospace',
-          fontSize: mini ? '0.65rem' : '0.75rem',
-          color: 'var(--text-secondary)',
-        }}>
+        <span style={{ fontFamily: 'monospace', fontSize: '0.65rem', color: 'var(--text-secondary)' }}>
           {session_id.slice(0, 8)}…
         </span>
         <span style={{ fontSize: '0.65rem', color: 'var(--text-secondary)' }}>
@@ -35,35 +45,58 @@ function SessionTokenChart({ data, mini = false }: { data: SessionTokenSeries; m
         </span>
       </div>
       {series.length === 0 ? (
-        <div style={{ fontSize: '0.65rem', color: 'var(--text-secondary)', textAlign: 'center', padding: '0.5rem' }}>
-          no data
-        </div>
+        <div style={{ fontSize: '0.6rem', color: 'var(--text-secondary)', textAlign: 'center' }}>no data</div>
       ) : (
-        <svg
-          width="100%"
-          viewBox={`0 0 ${series.length * (barW + 2)} ${chartH}`}
-          preserveAspectRatio="none"
-          style={{ display: 'block', borderRadius: '3px' }}
-        >
-          {series.map((d, i) => {
-            const total = d.input_tokens + d.output_tokens
-            const totalH = (total / maxVal) * chartH
-            const inputH = (d.input_tokens / maxVal) * chartH
-            const outputH = totalH - inputH
-            const x = i * (barW + 2)
-            return (
-              <g key={d.minute}>
-                <rect x={x} y={chartH - inputH} width={barW} height={inputH} fill="var(--accent-blue)" opacity={0.7} />
-                <rect x={x} y={chartH - totalH} width={barW} height={outputH} fill="var(--accent-green)" opacity={0.7} />
-              </g>
-            )
-          })}
-        </svg>
-      )}
-      {!mini && (
-        <div style={{ display: 'flex', gap: '0.75rem', marginTop: '0.1rem', fontSize: '0.6rem', color: 'var(--text-secondary)' }}>
-          <span><span style={{ color: 'var(--accent-blue)' }}>■</span> Input</span>
-          <span><span style={{ color: 'var(--accent-green)' }}>■</span> Output</span>
+        <div style={{ display: 'flex', gap: '0.25rem', alignItems: 'stretch' }}>
+          {/* Y-axis */}
+          <div style={{
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-between',
+            height: `${CHART_PX}px`,
+            fontSize: '0.5rem',
+            color: 'var(--text-secondary)',
+            textAlign: 'right',
+            flexShrink: 0,
+            lineHeight: 1,
+          }}>
+            <span>{fmtTokens(maxVal)}</span>
+            <span>0</span>
+          </div>
+          {/* Chart + X-axis */}
+          <div style={{ flex: 1 }}>
+            <svg
+              width="100%"
+              height={`${CHART_PX}px`}
+              viewBox={`0 0 ${series.length * (barW + 2)} ${CHART_PX}`}
+              preserveAspectRatio="none"
+              style={{ display: 'block', borderRadius: '2px' }}
+            >
+              {series.map((d, i) => {
+                const total = d.input_tokens + d.output_tokens
+                const totalH = (total / maxVal) * CHART_PX
+                const inputH = (d.input_tokens / maxVal) * CHART_PX
+                const outputH = totalH - inputH
+                const x = i * (barW + 2)
+                return (
+                  <g key={d.minute}>
+                    <rect x={x} y={CHART_PX - inputH} width={barW} height={inputH} fill="var(--accent-blue)" opacity={0.7} />
+                    <rect x={x} y={CHART_PX - totalH} width={barW} height={outputH} fill="var(--accent-green)" opacity={0.7} />
+                  </g>
+                )
+              })}
+            </svg>
+            <div style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              fontSize: '0.5rem',
+              color: 'var(--text-secondary)',
+              marginTop: '1px',
+            }}>
+              {firstMin != null && <span>{fmtAgo(firstMin)}</span>}
+              {lastMin != null && lastMin !== firstMin && <span>{fmtAgo(lastMin)}</span>}
+            </div>
+          </div>
         </div>
       )}
     </div>
