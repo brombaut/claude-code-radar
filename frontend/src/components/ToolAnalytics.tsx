@@ -3,13 +3,13 @@ import { type ToolStats, fetchToolStats, type TokenStats, fetchTokenStats, type 
 
 function SessionTokenChart({ data, mini = false }: { data: SessionTokenSeries; mini?: boolean }) {
   const { session_id, total_input, total_output, series } = data
-  const chartH = mini ? 48 : 80
+  const chartH = mini ? 24 : 40
   const maxVal = Math.max(...series.map(d => d.input_tokens + d.output_tokens), 1)
-  const barW = mini ? 6 : Math.max(6, Math.floor(480 / Math.max(series.length, 1)) - 2)
+  const barW = mini ? 5 : Math.max(5, Math.floor(480 / Math.max(series.length, 1)) - 2)
 
   return (
     <div style={{
-      padding: mini ? '0.5rem' : '0.75rem',
+      padding: mini ? '0.25rem 0.375rem' : '0.375rem 0.5rem',
       backgroundColor: 'var(--bg-tertiary)',
       borderRadius: '6px',
       border: '1px solid var(--border-color)',
@@ -389,64 +389,6 @@ export function ToolAnalytics({ timeframeHours = 1, sessionIds }: ToolAnalyticsP
                       </div>
                     ))}
                   </div>
-
-                  {tokenStats.time_series.length > 0 && (() => {
-                    const series = tokenStats.time_series
-                    const maxTotal = Math.max(...series.map(d => d.input_tokens + d.output_tokens), 1)
-                    const chartH = 100
-                    const barW = Math.max(4, Math.floor(560 / series.length) - 2)
-                    return (
-                      <div style={{ marginBottom: '1.25rem' }}>
-                        <div style={{
-                          fontSize: '0.65rem',
-                          color: 'var(--text-secondary)',
-                          textTransform: 'uppercase',
-                          letterSpacing: '0.05em',
-                          marginBottom: '0.5rem'
-                        }}>
-                          Tokens Over Time (hourly)
-                        </div>
-                        <svg
-                          width="100%"
-                          viewBox={`0 0 ${series.length * (barW + 2)} ${chartH}`}
-                          preserveAspectRatio="none"
-                          style={{ display: 'block', borderRadius: '4px', overflow: 'visible' }}
-                        >
-                          {series.map((d, i) => {
-                            const total = d.input_tokens + d.output_tokens
-                            const totalH = (total / maxTotal) * chartH
-                            const inputH = (d.input_tokens / maxTotal) * chartH
-                            const outputH = totalH - inputH
-                            const x = i * (barW + 2)
-                            return (
-                              <g key={d.hour_bucket}>
-                                <rect
-                                  x={x} y={chartH - inputH}
-                                  width={barW} height={inputH}
-                                  fill="var(--accent-blue)" opacity={0.7}
-                                />
-                                <rect
-                                  x={x} y={chartH - totalH}
-                                  width={barW} height={outputH}
-                                  fill="var(--accent-green)" opacity={0.7}
-                                />
-                              </g>
-                            )
-                          })}
-                        </svg>
-                        <div style={{
-                          display: 'flex',
-                          gap: '1rem',
-                          marginTop: '0.375rem',
-                          fontSize: '0.65rem',
-                          color: 'var(--text-secondary)'
-                        }}>
-                          <span><span style={{ color: 'var(--accent-blue)' }}>■</span> Input</span>
-                          <span><span style={{ color: 'var(--accent-green)' }}>■</span> Output</span>
-                        </div>
-                      </div>
-                    )
-                  })()}
 
                   {tokenSeries && tokenSeries.length > 0 && (
                     <div>
