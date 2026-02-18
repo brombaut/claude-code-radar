@@ -22,11 +22,11 @@ function App() {
     const latestAlert = new Map<string, number>()
     const latestPrompt = new Map<string, number>()
     for (const e of events) {
-      if ((e.hook_event_type === 'Notification' || e.hook_event_type === 'Stop' || e.hook_event_type === 'SubagentStop') && e.timestamp >= cutoff) {
+      if ((e.hook_event_type === 'Notification' || e.hook_event_type === 'Stop' || e.hook_event_type === 'SubagentStop' || e.hook_event_type === 'PermissionRequest') && e.timestamp >= cutoff) {
         const prev = latestAlert.get(e.session_id) ?? 0
         if (e.timestamp > prev) latestAlert.set(e.session_id, e.timestamp)
       }
-      if (e.hook_event_type === 'UserPromptSubmit' || e.hook_event_type === 'SessionEnd') {
+      if (e.hook_event_type === 'UserPromptSubmit' || e.hook_event_type === 'SessionEnd' || e.hook_event_type === 'PreToolUse') {
         const prev = latestPrompt.get(e.session_id) ?? 0
         if (e.timestamp > prev) latestPrompt.set(e.session_id, e.timestamp)
       }
