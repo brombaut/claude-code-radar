@@ -151,6 +151,37 @@ Core dependencies:
 logs/                          # Event logs written here
 ```
 
+## Issue Tracking
+
+This project uses [bd (beads)](https://github.com/steveyegge/beads) for issue tracking — a lightweight, Git-native issue tracker.
+
+### Installation
+
+Install with Go:
+
+```bash
+go install github.com/steveyegge/beads/cmd/bd@latest
+```
+
+Then initialize in the project root:
+
+```bash
+bd init
+```
+
+### Essential Commands
+
+```bash
+bd ready                          # List unblocked work
+bd create "Title" --type task     # Create a new issue
+bd show <id>                      # View issue details
+bd close <id>                     # Mark issue complete
+bd sync                           # Sync with git (run at session end)
+bd prime                          # Full workflow context for AI assistants
+```
+
+---
+
 ## Running the Dashboard
 
 The observability dashboard provides real-time monitoring and analysis of Claude Code sessions.
