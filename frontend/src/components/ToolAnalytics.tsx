@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { type ToolStats, fetchToolStats, type TokenStats, fetchTokenStats, type SessionTokenSeries, fetchTokenSeries } from '../api/client'
+import { getSessionColor } from '../utils/sessionColors'
 
 const CHART_PX = 120
 
@@ -16,6 +17,7 @@ function fmtAgo(ms: number) {
 
 function SessionTokenChart({ data, mini = false }: { data: SessionTokenSeries; mini?: boolean }) {
   const { session_id, total_input, total_output, series } = data
+  const color = getSessionColor(session_id)
   const maxVal = Math.max(...series.map(d => d.input_tokens + d.output_tokens), 1)
   const barW = mini ? 4 : Math.max(4, Math.floor(480 / Math.max(series.length, 1)) - 2)
   const firstMin = series[0]?.minute
@@ -24,9 +26,9 @@ function SessionTokenChart({ data, mini = false }: { data: SessionTokenSeries; m
   return (
     <div style={{
       padding: '0.25rem 0.375rem',
-      backgroundColor: 'var(--bg-tertiary)',
+      backgroundColor: color.bg,
       borderRadius: '6px',
-      border: '1px solid var(--border-color)',
+      border: `1px solid ${color.border}`,
     }}>
       <div style={{
         display: 'flex',
@@ -80,8 +82,8 @@ function SessionTokenChart({ data, mini = false }: { data: SessionTokenSeries; m
                 const x = i * (barW + 2)
                 return (
                   <g key={d.minute}>
-                    <rect x={x} y={CHART_PX - inputH} width={barW} height={inputH} fill="var(--accent-blue)" opacity={0.7} />
-                    <rect x={x} y={CHART_PX - totalH} width={barW} height={outputH} fill="var(--accent-green)" opacity={0.7} />
+                    <rect x={x} y={CHART_PX - inputH} width={barW} height={inputH} fill={color.raw} opacity={0.8} />
+                    <rect x={x} y={CHART_PX - totalH} width={barW} height={outputH} fill={color.raw} opacity={0.5} />
                   </g>
                 )
               })}
@@ -434,7 +436,7 @@ export function ToolAnalytics({ timeframeHours = 1, sessionIds }: ToolAnalyticsP
                         Per Session (per minute)
                       </div>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
-                        {tokenSeries.map(s => (
+                        {[...tokenSeries].sort((a, b) => a.session_id.localeCompare(b.session_id)).map(s => (
                           <SessionTokenChart
                             key={s.session_id}
                             data={s}

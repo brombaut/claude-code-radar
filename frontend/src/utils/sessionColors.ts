@@ -45,7 +45,7 @@ function hslToRgb(h: number, s: number, l: number): [number, number, number] {
   ]
 }
 
-function buildColor(familyIndex: number, sessionId: string): { bg: string; border: string } {
+function buildColor(familyIndex: number, sessionId: string): { bg: string; border: string; raw: string } {
   const family = COLOR_FAMILIES[familyIndex]
   const sessionHash = hashString(sessionId)
   const hueT = (sessionHash % 1000) / 1000
@@ -59,10 +59,11 @@ function buildColor(familyIndex: number, sessionId: string): { bg: string; borde
   return {
     bg: `rgba(${r}, ${g}, ${b}, 0.15)`,
     border: `rgba(${r}, ${g}, ${b}, 0.4)`,
+    raw: `rgb(${r}, ${g}, ${b})`,
   }
 }
 
-export function getSessionColor(sessionId: string): { bg: string; border: string } {
+export function getSessionColor(sessionId: string): { bg: string; border: string; raw: string } {
   const familyIndex = hashString(sessionId) % COLOR_FAMILIES.length
   return buildColor(familyIndex, sessionId)
 }
