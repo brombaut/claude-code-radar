@@ -80,13 +80,23 @@ def main():
     if transcript_path:
         model_name = get_model_from_transcript(session_id, transcript_path)
 
+    # Default timestamp: now
+    ts_ms = int(datetime.now().timestamp() * 1000)
+
+    # For TokenUsage events, use the actual API call time from the payload
+    if args.event_type == 'TokenUsage':
+        ts_str = input_data.get('token_usage', {}).get('timestamp', '')
+        if ts_str:
+            dt = datetime.fromisoformat(ts_str.replace('Z', '+00:00'))
+            ts_ms = int(dt.timestamp() * 1000)
+
     # Prepare event data for server
     event_data = {
         'source_app': args.source_app,
         'session_id': session_id,
         'hook_event_type': args.event_type,
         'payload': input_data,
-        'timestamp': int(datetime.now().timestamp() * 1000),
+        'timestamp': ts_ms,
         'model_name': model_name
     }
 
