@@ -4,7 +4,7 @@ from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 from typing import Optional
 from database import init_db
-from events import save_event, get_events, get_active_sessions, get_tool_stats, get_token_stats
+from events import save_event, get_events, get_active_sessions, get_tool_stats, get_token_stats, get_token_series_by_session
 import asyncio
 import json
 
@@ -105,6 +105,11 @@ def token_statistics(hours: float = 1):
     """Get token usage statistics."""
     stats = get_token_stats(hours)
     return stats
+
+@app.get("/api/tokens/sessions")
+def token_sessions(hours: float = 1, session_id: Optional[str] = None):
+    """Get per-session minute-level token time series."""
+    return {"sessions": get_token_series_by_session(hours, session_id)}
 
 async def event_generator():
     """Generate SSE events for connected clients."""
