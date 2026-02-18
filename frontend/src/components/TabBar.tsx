@@ -13,30 +13,18 @@ export function TabBar({ tabs, activeTab, onTabChange }: TabBarProps) {
   return (
     <div style={{
       display: 'flex',
-      backgroundColor: 'var(--bg-tertiary)',
+      backgroundColor: 'var(--bg-secondary)',
+      borderBottom: '1px solid var(--border-color)',
     }}>
-      {tabs.map(tab => {
-        const isActive = tab.key === activeTab
-        return (
-          <button
-            key={tab.key}
-            onClick={() => onTabChange(tab.key)}
-            style={{
-              padding: '0.6rem 1.5rem',
-              fontSize: '0.875rem',
-              fontWeight: isActive ? 600 : 400,
-              color: isActive ? 'var(--text-primary)' : 'var(--text-secondary)',
-              backgroundColor: isActive ? 'var(--bg-primary)' : 'transparent',
-              border: 'none',
-              borderRadius: 0,
-              cursor: 'pointer',
-              transition: 'color 0.15s, background-color 0.15s',
-            }}
-          >
-            {tab.label}
-          </button>
-        )
-      })}
+      {tabs.map(tab => (
+        <button
+          key={tab.key}
+          className={`tab-btn${tab.key === activeTab ? ' active' : ''}`}
+          onClick={() => onTabChange(tab.key)}
+        >
+          {tab.label}
+        </button>
+      ))}
     </div>
   )
 }

@@ -1,1 +1,35 @@
 /* App-specific styles */
+
+/* Tab bar */
+.tab-btn {
+  position: relative;
+  padding: 0.75rem 1.5rem;
+  font-size: 0.875rem;
+  font-family: inherit;
+  font-weight: 400;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  border-radius: 0;
+  cursor: pointer;
+  transition: color 0.15s, background-color 0.15s;
+  color: var(--text-secondary);
+}
+.tab-btn:hover {
+  color: var(--text-primary);
+  background-color: color-mix(in srgb, var(--accent-teal) 8%, transparent);
+  border-color: transparent;
+  outline: none;
+}
+.tab-btn:focus {
+  outline: none;
+}
+.tab-btn:focus-visible {
+  outline: 2px solid var(--accent-teal);
+  outline-offset: -2px;
+}
+.tab-btn.active {
+  color: var(--accent-teal);
+  font-weight: 600;
+  border-bottom-color: var(--accent-teal);
+}

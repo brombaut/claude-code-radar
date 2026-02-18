@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react'
+import './App.css'
 import { useEventStream } from './hooks/useEventStream'
 import { SessionSidebar } from './components/SessionSidebar'
 import { ToolAnalytics } from './components/ToolAnalytics'
