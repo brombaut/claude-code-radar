@@ -3,13 +3,13 @@ import { type ToolStats, fetchToolStats, type TokenStats, fetchTokenStats, type 
 
 function SessionTokenChart({ data, mini = false }: { data: SessionTokenSeries; mini?: boolean }) {
   const { session_id, total_input, total_output, series } = data
-  const chartH = mini ? 24 : 40
+  const chartH = mini ? 12 : 20
   const maxVal = Math.max(...series.map(d => d.input_tokens + d.output_tokens), 1)
-  const barW = mini ? 5 : Math.max(5, Math.floor(480 / Math.max(series.length, 1)) - 2)
+  const barW = mini ? 4 : Math.max(4, Math.floor(480 / Math.max(series.length, 1)) - 2)
 
   return (
     <div style={{
-      padding: mini ? '0.25rem 0.375rem' : '0.375rem 0.5rem',
+      padding: '0.25rem 0.375rem',
       backgroundColor: 'var(--bg-tertiary)',
       borderRadius: '6px',
       border: '1px solid var(--border-color)',
@@ -18,7 +18,7 @@ function SessionTokenChart({ data, mini = false }: { data: SessionTokenSeries; m
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'baseline',
-        marginBottom: '0.375rem',
+        marginBottom: '0.2rem',
       }}>
         <span style={{
           fontFamily: 'monospace',
@@ -61,10 +61,9 @@ function SessionTokenChart({ data, mini = false }: { data: SessionTokenSeries; m
         </svg>
       )}
       {!mini && (
-        <div style={{ display: 'flex', gap: '1rem', marginTop: '0.25rem', fontSize: '0.6rem', color: 'var(--text-secondary)' }}>
+        <div style={{ display: 'flex', gap: '0.75rem', marginTop: '0.1rem', fontSize: '0.6rem', color: 'var(--text-secondary)' }}>
           <span><span style={{ color: 'var(--accent-blue)' }}>■</span> Input</span>
           <span><span style={{ color: 'var(--accent-green)' }}>■</span> Output</span>
-          <span style={{ marginLeft: 'auto' }}>per minute</span>
         </div>
       )}
     </div>
@@ -401,7 +400,7 @@ export function ToolAnalytics({ timeframeHours = 1, sessionIds }: ToolAnalyticsP
                       }}>
                         Per Session (per minute)
                       </div>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
                         {tokenSeries.map(s => (
                           <SessionTokenChart
                             key={s.session_id}
