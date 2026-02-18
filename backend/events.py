@@ -192,3 +192,52 @@ def get_token_stats(hours: float = 1) -> dict:
             "by_session": by_session,
             "time_series": time_series,
         }
+
+def get_token_series_by_session(hours: float, session_id: str = None) -> list[dict]:
+    """
+    Returns per-session minute-level token time series.
+
+    Each entry: { session_id, total_input, total_output, series: [{minute, input_tokens, output_tokens, cache_read_tokens}] }
+    Ordered by total token usage descending.
+    """
+    with get_db() as conn:
+        cutoff = int((time.time() - hours * 3600) * 1000)
+        cursor = conn.cursor()
+
+        session_filter = "AND session_id = ?" if session_id else ""
+        params = [cutoff]
+        if session_id:
+            params.append(session_id)
+
+        cursor.execute(f"""
+            SELECT
+                session_id,
+                (timestamp / 60000) * 60000                                                          AS minute,
+                COALESCE(SUM(json_extract(payload, '$.token_usage.input_tokens')), 0)                AS input_tokens,
+                COALESCE(SUM(json_extract(payload, '$.token_usage.output_tokens')), 0)               AS output_tokens,
+                COALESCE(SUM(json_extract(payload, '$.token_usage.cache_read_input_tokens')), 0)     AS cache_read_tokens
+            FROM events
+            WHERE timestamp > ? AND hook_event_type = 'TokenUsage' {session_filter}
+            GROUP BY session_id, minute
+            ORDER BY session_id, minute ASC
+        """, params)
+
+        rows = cursor.fetchall()
+
+    # Group by session_id
+    sessions: dict[str, dict] = {}
+    for row in rows:
+        sid = row['session_id']
+        if sid not in sessions:
+            sessions[sid] = {'session_id': sid, 'total_input': 0, 'total_output': 0, 'series': []}
+        point = {
+            'minute': row['minute'],
+            'input_tokens': row['input_tokens'],
+            'output_tokens': row['output_tokens'],
+            'cache_read_tokens': row['cache_read_tokens'],
+        }
+        sessions[sid]['series'].append(point)
+        sessions[sid]['total_input'] += row['input_tokens']
+        sessions[sid]['total_output'] += row['output_tokens']
+
+    return sorted(sessions.values(), key=lambda s: s['total_input'] + s['total_output'], reverse=True)
