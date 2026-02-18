@@ -1,16 +1,87 @@
-import { useState, useEffect, Fragment } from 'react'
-import { type ToolStats, fetchToolStats, type TokenStats, fetchTokenStats } from '../api/client'
+import { useState, useEffect } from 'react'
+import { type ToolStats, fetchToolStats, type TokenStats, fetchTokenStats, type SessionTokenSeries, fetchTokenSeries } from '../api/client'
+
+function SessionTokenChart({ data, mini = false }: { data: SessionTokenSeries; mini?: boolean }) {
+  const { session_id, total_input, total_output, series } = data
+  const chartH = mini ? 48 : 80
+  const maxVal = Math.max(...series.map(d => d.input_tokens + d.output_tokens), 1)
+  const barW = mini ? 6 : Math.max(6, Math.floor(480 / Math.max(series.length, 1)) - 2)
+
+  return (
+    <div style={{
+      padding: mini ? '0.5rem' : '0.75rem',
+      backgroundColor: 'var(--bg-tertiary)',
+      borderRadius: '6px',
+      border: '1px solid var(--border-color)',
+    }}>
+      <div style={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'baseline',
+        marginBottom: '0.375rem',
+      }}>
+        <span style={{
+          fontFamily: 'monospace',
+          fontSize: mini ? '0.65rem' : '0.75rem',
+          color: 'var(--text-secondary)',
+        }}>
+          {session_id.slice(0, 8)}…
+        </span>
+        <span style={{ fontSize: '0.65rem', color: 'var(--text-secondary)' }}>
+          <span style={{ color: 'var(--accent-blue)' }}>{total_input.toLocaleString()}</span>
+          {' in · '}
+          <span style={{ color: 'var(--accent-green)' }}>{total_output.toLocaleString()}</span>
+          {' out'}
+        </span>
+      </div>
+      {series.length === 0 ? (
+        <div style={{ fontSize: '0.65rem', color: 'var(--text-secondary)', textAlign: 'center', padding: '0.5rem' }}>
+          no data
+        </div>
+      ) : (
+        <svg
+          width="100%"
+          viewBox={`0 0 ${series.length * (barW + 2)} ${chartH}`}
+          preserveAspectRatio="none"
+          style={{ display: 'block', borderRadius: '3px' }}
+        >
+          {series.map((d, i) => {
+            const total = d.input_tokens + d.output_tokens
+            const totalH = (total / maxVal) * chartH
+            const inputH = (d.input_tokens / maxVal) * chartH
+            const outputH = totalH - inputH
+            const x = i * (barW + 2)
+            return (
+              <g key={d.minute}>
+                <rect x={x} y={chartH - inputH} width={barW} height={inputH} fill="var(--accent-blue)" opacity={0.7} />
+                <rect x={x} y={chartH - totalH} width={barW} height={outputH} fill="var(--accent-green)" opacity={0.7} />
+              </g>
+            )
+          })}
+        </svg>
+      )}
+      {!mini && (
+        <div style={{ display: 'flex', gap: '1rem', marginTop: '0.25rem', fontSize: '0.6rem', color: 'var(--text-secondary)' }}>
+          <span><span style={{ color: 'var(--accent-blue)' }}>■</span> Input</span>
+          <span><span style={{ color: 'var(--accent-green)' }}>■</span> Output</span>
+          <span style={{ marginLeft: 'auto' }}>per minute</span>
+        </div>
+      )}
+    </div>
+  )
+}
 
 interface ToolAnalyticsProps {
   timeframeHours?: number
   sessionIds?: string[]
 }
 
-export function ToolAnalytics({ timeframeHours = 1 }: ToolAnalyticsProps) {
+export function ToolAnalytics({ timeframeHours = 1, sessionIds }: ToolAnalyticsProps) {
   const [stats, setStats] = useState<ToolStats | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [tokenStats, setTokenStats] = useState<TokenStats | null>(null)
+  const [tokenSeries, setTokenSeries] = useState<SessionTokenSeries[] | null>(null)
   const [tokenCollapsed, setTokenCollapsed] = useState(false)
   useEffect(() => {
     loadStats()
@@ -22,12 +93,15 @@ export function ToolAnalytics({ timeframeHours = 1 }: ToolAnalyticsProps) {
     try {
       setLoading(true)
       setError(null)
-      const [toolData, tokenData] = await Promise.all([
+      const singleSessionId = sessionIds?.length === 1 ? sessionIds[0] : undefined
+      const [toolData, tokenData, seriesData] = await Promise.all([
         fetchToolStats(timeframeHours),
         fetchTokenStats(timeframeHours),
+        fetchTokenSeries(timeframeHours, singleSessionId),
       ])
       setStats(toolData)
       setTokenStats(tokenData)
+      setTokenSeries(seriesData.sessions)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to fetch stats')
     } finally {
@@ -374,7 +448,7 @@ export function ToolAnalytics({ timeframeHours = 1 }: ToolAnalyticsProps) {
                     )
                   })()}
 
-                  {tokenStats.by_session.length > 0 && (
+                  {tokenSeries && tokenSeries.length > 0 && (
                     <div>
                       <div style={{
                         fontSize: '0.65rem',
@@ -383,49 +457,15 @@ export function ToolAnalytics({ timeframeHours = 1 }: ToolAnalyticsProps) {
                         letterSpacing: '0.05em',
                         marginBottom: '0.5rem'
                       }}>
-                        By Session
+                        Per Session (per minute)
                       </div>
-                      <div style={{
-                        display: 'grid',
-                        gridTemplateColumns: '1fr repeat(4, auto)',
-                        gap: '0.25rem 0.75rem',
-                        fontSize: '0.75rem'
-                      }}>
-                        {['Session', 'Input', 'Output', 'Cache Read', 'Reqs'].map(h => (
-                          <div key={h} style={{
-                            color: 'var(--text-secondary)',
-                            fontWeight: '600',
-                            paddingBottom: '0.25rem',
-                            borderBottom: '1px solid var(--border-color)'
-                          }}>
-                            {h}
-                          </div>
-                        ))}
-                        {tokenStats.by_session.map(s => (
-                          <Fragment key={s.session_id}>
-                            <div style={{
-                              fontFamily: 'monospace',
-                              overflow: 'hidden',
-                              textOverflow: 'ellipsis',
-                              whiteSpace: 'nowrap',
-                              color: 'var(--text-secondary)',
-                              fontSize: '0.7rem'
-                            }}>
-                              {s.session_id.slice(0, 8)}…
-                            </div>
-                            <div style={{ textAlign: 'right', color: 'var(--accent-blue)' }}>
-                              {s.input_tokens.toLocaleString()}
-                            </div>
-                            <div style={{ textAlign: 'right', color: 'var(--accent-green)' }}>
-                              {s.output_tokens.toLocaleString()}
-                            </div>
-                            <div style={{ textAlign: 'right', color: 'var(--text-secondary)' }}>
-                              {s.cache_read_tokens.toLocaleString()}
-                            </div>
-                            <div style={{ textAlign: 'right', color: 'var(--text-primary)' }}>
-                              {s.request_count}
-                            </div>
-                          </Fragment>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                        {tokenSeries.map(s => (
+                          <SessionTokenChart
+                            key={s.session_id}
+                            data={s}
+                            mini={tokenSeries.length > 1}
+                          />
                         ))}
                       </div>
                     </div>
