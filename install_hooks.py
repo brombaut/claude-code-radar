@@ -215,6 +215,31 @@ def build_ccr_hooks_config(source_app, backend_url):
     return config
 
 
+def is_ccr_hook(hook_command):
+    """Check if a hook command is a CCR hook by looking for known script names."""
+    ccr_scripts = [
+        'pre_tool_use.py',
+        'post_tool_use.py',
+        'post_tool_use_failure.py',
+        'permission_request.py',
+        'notification.py',
+        'subagent_start.py',
+        'subagent_stop.py',
+        'stop.py',
+        'pre_compact.py',
+        'user_prompt_submit.py',
+        'session_start.py',
+        'session_end.py',
+        'send_event.py',
+    ]
+
+    if not isinstance(hook_command, dict) or 'command' not in hook_command:
+        return False
+
+    cmd = hook_command['command']
+    return any(script in cmd for script in ccr_scripts)
+
+
 def merge_settings(existing, ccr_config):
     merged = existing.copy()
     merged['statusLine'] = ccr_config['statusLine']
@@ -224,8 +249,10 @@ def merge_settings(existing, ccr_config):
 
     for event_type, ccr_event_config in ccr_config['hooks'].items():
         if event_type not in merged['hooks']:
+            # No existing hooks for this event, just add CCR hooks
             merged['hooks'][event_type] = ccr_event_config
         else:
+            # Event type exists - remove old CCR hooks, keep user hooks, add new CCR hooks
             existing_event = merged['hooks'][event_type]
             ccr_hooks = ccr_event_config[0]['hooks']
 
@@ -233,7 +260,12 @@ def merge_settings(existing, ccr_config):
                 target_matcher = existing_event[0]
                 if 'hooks' not in target_matcher:
                     target_matcher['hooks'] = []
-                target_matcher['hooks'].extend(ccr_hooks)
+
+                # Filter out old CCR hooks, keeping only user hooks
+                user_hooks = [h for h in target_matcher['hooks'] if not is_ccr_hook(h)]
+
+                # Set hooks to user hooks + new CCR hooks
+                target_matcher['hooks'] = user_hooks + ccr_hooks
 
     return merged
 
