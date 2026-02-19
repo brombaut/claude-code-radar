@@ -11,6 +11,8 @@ Run `bd prime` for workflow context, or install hooks (`bd hooks install`) for a
 
 For full workflow details: `bd prime`
 
+**Always create an issue for new work identified during a session — never just make a mental note.**
+
 # Claude Code Radar (CCR)
 
 *"I see a bad moon rising, I see trouble on the way"* 🎵
