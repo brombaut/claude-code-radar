@@ -18,10 +18,24 @@ function fmtAgo(ms: number) {
 function SessionTokenChart({ data, mini = false }: { data: SessionTokenSeries; mini?: boolean }) {
   const { session_id, total_input, total_output, series } = data
   const color = getSessionColor(session_id)
-  const maxVal = Math.max(...series.map(d => d.input_tokens + d.output_tokens), 1)
-  const barW = mini ? 4 : Math.max(4, Math.floor(480 / Math.max(series.length, 1)) - 2)
+  const maxOutput = Math.max(...series.map(d => d.output_tokens), 1)
+  const maxInput = Math.max(...series.map(d => d.input_tokens), 1)
   const firstMin = series[0]?.minute
   const lastMin = series[series.length - 1]?.minute
+
+  const PAD = 2
+  const chartW = 480
+  const n = series.length
+
+  const toPoints = (getValue: (d: typeof series[0]) => number, maxVal: number) =>
+    series.map((d, i) => {
+      const x = n === 1 ? chartW / 2 : PAD + (i / (n - 1)) * (chartW - 2 * PAD)
+      const y = PAD + (1 - getValue(d) / maxVal) * (CHART_PX - 2 * PAD)
+      return `${x},${y}`
+    }).join(' ')
+
+  const outputPoints = toPoints(d => d.output_tokens, maxOutput)
+  const inputPoints = toPoints(d => d.input_tokens, maxInput)
 
   return (
     <div style={{
@@ -50,19 +64,19 @@ function SessionTokenChart({ data, mini = false }: { data: SessionTokenSeries; m
         <div style={{ fontSize: '0.6rem', color: 'var(--text-secondary)', textAlign: 'center' }}>no data</div>
       ) : (
         <div style={{ display: 'flex', gap: '0.25rem', alignItems: 'stretch' }}>
-          {/* Y-axis */}
+          {/* Left Y-axis (output tokens) */}
           <div style={{
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'space-between',
             height: `${CHART_PX}px`,
             fontSize: '0.5rem',
-            color: 'var(--text-secondary)',
+            color: 'var(--accent-green)',
             textAlign: 'right',
             flexShrink: 0,
             lineHeight: 1,
           }}>
-            <span>{fmtTokens(maxVal)}</span>
+            <span>{fmtTokens(maxOutput)}</span>
             <span>0</span>
           </div>
           {/* Chart + X-axis */}
@@ -70,23 +84,24 @@ function SessionTokenChart({ data, mini = false }: { data: SessionTokenSeries; m
             <svg
               width="100%"
               height={`${CHART_PX}px`}
-              viewBox={`0 0 ${series.length * (barW + 2)} ${CHART_PX}`}
+              viewBox={`0 0 ${chartW} ${CHART_PX}`}
               preserveAspectRatio="none"
               style={{ display: 'block', borderRadius: '2px' }}
             >
-              {series.map((d, i) => {
-                const total = d.input_tokens + d.output_tokens
-                const totalH = (total / maxVal) * CHART_PX
-                const inputH = (d.input_tokens / maxVal) * CHART_PX
-                const outputH = totalH - inputH
-                const x = i * (barW + 2)
-                return (
-                  <g key={d.minute}>
-                    <rect x={x} y={CHART_PX - inputH} width={barW} height={inputH} fill={color.raw} opacity={0.8} />
-                    <rect x={x} y={CHART_PX - totalH} width={barW} height={outputH} fill={color.raw} opacity={0.5} />
-                  </g>
-                )
-              })}
+              <polyline
+                points={outputPoints}
+                fill="none"
+                stroke="var(--accent-green)"
+                strokeWidth="2"
+                vectorEffect="non-scaling-stroke"
+              />
+              <polyline
+                points={inputPoints}
+                fill="none"
+                stroke="var(--accent-blue)"
+                strokeWidth="2"
+                vectorEffect="non-scaling-stroke"
+              />
             </svg>
             <div style={{
               display: 'flex',
@@ -98,6 +113,21 @@ function SessionTokenChart({ data, mini = false }: { data: SessionTokenSeries; m
               {firstMin != null && <span>{fmtAgo(firstMin)}</span>}
               {lastMin != null && lastMin !== firstMin && <span>{fmtAgo(lastMin)}</span>}
             </div>
+          </div>
+          {/* Right Y-axis (input tokens) */}
+          <div style={{
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-between',
+            height: `${CHART_PX}px`,
+            fontSize: '0.5rem',
+            color: 'var(--accent-blue)',
+            textAlign: 'left',
+            flexShrink: 0,
+            lineHeight: 1,
+          }}>
+            <span>{fmtTokens(maxInput)}</span>
+            <span>0</span>
           </div>
         </div>
       )}
@@ -435,12 +465,12 @@ export function ToolAnalytics({ timeframeHours = 1, sessionIds }: ToolAnalyticsP
                       }}>
                         Per Session (per minute)
                       </div>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '0.5rem' }}>
                         {[...tokenSeries].sort((a, b) => a.session_id.localeCompare(b.session_id)).map(s => (
                           <SessionTokenChart
                             key={s.session_id}
                             data={s}
-                            mini={tokenSeries.length > 1}
+                            mini={tokenSeries.length > 2}
                           />
                         ))}
                       </div>
