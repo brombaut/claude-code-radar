@@ -30,7 +30,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "uv run $CLAUDE_PROJECT_DIR/.claude/hooks/post_tool_use.py"
+            "command": "uv run $CLAUDE_PROJECT_DIR/.claude/hooks/post_tool_use.py --source-app claude-code-observability"
           },
           {
             "type": "command",
@@ -58,7 +58,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "uv run $CLAUDE_PROJECT_DIR/.claude/hooks/stop.py --chat"
+            "command": "uv run $CLAUDE_PROJECT_DIR/.claude/hooks/stop.py --chat --source-app claude-code-observability"
           },
           {
             "type": "command",

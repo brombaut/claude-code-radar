@@ -182,10 +182,14 @@ def build_ccr_hooks_config(source_app, backend_url):
         }
     }
 
+    scripts_requiring_source_app = {'post_tool_use.py', 'stop.py'}
+
     for event_type, (script_name, hook_args) in hook_configs.items():
         hook_cmd = f'uv run $CLAUDE_PROJECT_DIR/.claude/hooks/{script_name}'
         if hook_args:
             hook_cmd += f' {" ".join(hook_args)}'
+        if script_name in scripts_requiring_source_app:
+            hook_cmd += f' --source-app {source_app}'
 
         send_event_cmd = f'uv run $CLAUDE_PROJECT_DIR/.claude/hooks/send_event.py --source-app {source_app} --event-type {event_type}'
 

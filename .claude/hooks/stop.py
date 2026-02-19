@@ -158,6 +158,7 @@ def main():
         parser.add_argument(
             "--notify", action="store_true", help="Announce completion via TTS"
         )
+        parser.add_argument("--source-app", required=True)
         args = parser.parse_args()
 
         # Read JSON input from stdin
@@ -261,7 +262,7 @@ def main():
                             result = subprocess.run(
                                 [
                                     'uv', 'run', str(send_event_script),
-                                    '--source-app', 'claude-code-observability',
+                                    '--source-app', args.source_app,
                                     '--event-type', 'AssistantMessage'
                                 ],
                                 input=json.dumps(event_payload),
@@ -299,7 +300,7 @@ def main():
                             subprocess.run(
                                 [
                                     'uv', 'run', str(send_event_script),
-                                    '--source-app', 'claude-code-observability',
+                                    '--source-app', args.source_app,
                                     '--event-type', 'TokenUsage'
                                 ],
                                 input=json.dumps(event_payload),

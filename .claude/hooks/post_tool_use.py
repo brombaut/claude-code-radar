@@ -3,6 +3,7 @@
 # requires-python = ">=3.8"
 # ///
 
+import argparse
 import json
 import os
 import sys
@@ -22,6 +23,10 @@ from utils.token_extractor import (
 
 def main():
     try:
+        parser = argparse.ArgumentParser()
+        parser.add_argument('--source-app', required=True)
+        args = parser.parse_args()
+
         # Read JSON input from stdin
         input_data = json.load(sys.stdin)
 
@@ -106,7 +111,7 @@ def main():
                             result = subprocess.run(
                                 [
                                     'uv', 'run', str(send_event_script),
-                                    '--source-app', 'claude-code-observability',
+                                    '--source-app', args.source_app,
                                     '--event-type', 'AssistantMessage'
                                 ],
                                 input=json.dumps(event_payload),
@@ -144,7 +149,7 @@ def main():
                             subprocess.run(
                                 [
                                     'uv', 'run', str(send_event_script),
-                                    '--source-app', 'claude-code-observability',
+                                    '--source-app', args.source_app,
                                     '--event-type', 'TokenUsage'
                                 ],
                                 input=json.dumps(event_payload),

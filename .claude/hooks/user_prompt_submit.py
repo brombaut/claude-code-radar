@@ -73,8 +73,9 @@ def manage_session_data(session_id, prompt, name_agent=False):
     if name_agent and "agent_name" not in session_data:
         # Try Anthropic first (preferred)
         try:
+            script_dir = Path(__file__).parent
             result = subprocess.run(
-                ["uv", "run", ".claude/hooks/utils/llm/anth.py", "--agent-name"],
+                ["uv", "run", str(script_dir / "utils" / "llm" / "anth.py"), "--agent-name"],
                 capture_output=True,
                 text=True,
                 timeout=10,
@@ -91,7 +92,7 @@ def manage_session_data(session_id, prompt, name_agent=False):
             # Fall back to Ollama if Anthropic fails
             try:
                 result = subprocess.run(
-                    ["uv", "run", ".claude/hooks/utils/llm/ollama.py", "--agent-name"],
+                    ["uv", "run", str(script_dir / "utils" / "llm" / "ollama.py"), "--agent-name"],
                     capture_output=True,
                     text=True,
                     timeout=10,  # Shorter timeout for local Ollama
