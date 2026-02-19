@@ -206,7 +206,7 @@ export function ToolAnalytics({ timeframeHours = 1, sessionIds }: ToolAnalyticsP
 
   useEffect(() => {
     loadStats()
-    const interval = setInterval(loadStats, 30000)
+    const interval = setInterval(loadStats, 5000)
     return () => clearInterval(interval)
   }, [timeframeHours])
 
